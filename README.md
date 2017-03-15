@@ -5,7 +5,8 @@ This is a class project for my Artificial Intelligence course.
 # The Idea
 
 In an ambient with Alive and Dead ants, the Alive ones tend to agroup the dead
-ones in groups, thus making more space available for movement.
+ones, thus making more space available for movement. This a simple behaviour that
+can be used in real life to organise documents, for example.
 
 # Implementation
 
