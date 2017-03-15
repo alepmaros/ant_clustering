@@ -9,6 +9,7 @@
 #include <vector>
 #include <cstdlib>
 #include <ctime>
+#include <cstring>
 
 #include <SFML/Graphics.hpp>
 
@@ -17,12 +18,33 @@
 std::vector<Ant> alive_ants;
 std::vector<Ant> dead_ants;
 
+
+// Numer of alive and dead ants
 int         nAliveAnts  = 50;
-int         nDeadAnts   = 500;
+int         nDeadAnts   = 1000;
+// Size of ants in pixels
+int         antSize     = 5;
+
+// Screen size in the x and y positions
+int         screenSize  = 800;
+
+// Space available to put the ants (grid size)
+int         spaceAvailable = (int) 800.0 / 5.0;
 
 int main()
 {
     std::srand(std::time(0));
+
+    // The antGrid is only used to check if there is an ent in an space.
+    // 'n' -- No ant
+    // 'a' -- Alive ant
+    // 'd' -- Dead ant
+    char **antGrid = (char**) malloc(sizeof(char*) * spaceAvailable);
+    for (int i = 0; i < spaceAvailable; i++)
+    {
+        antGrid[i] = (char*) malloc(sizeof(char) * spaceAvailable);
+        memset(antGrid[i], 'n', sizeof(char) * spaceAvailable);
+    }
 
     // Window setup
     sf::RenderWindow window(sf::VideoMode(800, 800), "Ants");
@@ -37,10 +59,15 @@ int main()
     dead_ants.clear();
     for (int i = 0; i < nDeadAnts; i++)
     {
-        int posX = std::rand() % 800;
-        int posY = std::rand() % 800;
+        int posX, posY;
+        do {
+            posX = std::rand() % spaceAvailable;
+            posY = std::rand() % spaceAvailable;
+        } while(antGrid[posY][posX] != 'n');
+
         //std::cout << posX << "-" << posY << "-" << dead_ants.size() << std::endl;
-        Ant a(true, sf::Vector2f(posX, posY));
+        Ant a(true, sf::Vector2f(posX * antSize, posY * antSize));
+        antGrid[posY][posX] = 'd';
         dead_ants.push_back(a);
     }
 
