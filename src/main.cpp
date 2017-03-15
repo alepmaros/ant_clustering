@@ -19,15 +19,31 @@ std::vector<Ant> alive_ants;
 std::vector<Ant> dead_ants;
 
 
+/*****************
+ * ANTS CONFIGS  *
+ *****************/
 // Numer of alive and dead ants
 int         nAliveAnts  = 50;
 int         nDeadAnts   = 1000;
+// Radius that the ant can see
+// If radius == 1 the ant can see the 8 adjacents spaces
+// If radius == 2 the ant can see 8 + 16 spaces
+// etc...
+int         radius      = 2;
 // Size of ants in pixels
 int         antSize     = 5;
 
+
+/******************
+ * SCREEN CONFIG  *
+ ******************/
 // Screen size in the x and y positions
 int         screenSize  = 800;
 
+
+/***************
+ * GRID CONFIG *
+ ***************/
 // Space available to put the ants (grid size)
 int         spaceAvailable = (int) 800.0 / 5.0;
 
@@ -66,7 +82,7 @@ int main()
         } while(antGrid[posY][posX] != 'n');
 
         //std::cout << posX << "-" << posY << "-" << dead_ants.size() << std::endl;
-        Ant a(true, sf::Vector2f(posX * antSize, posY * antSize));
+        Ant a(true, sf::Vector2f(posX * antSize, posY * antSize), radius);
         antGrid[posY][posX] = 'd';
         dead_ants.push_back(a);
     }

@@ -13,7 +13,7 @@ class Ant
 {
 
 public:
-                        Ant(bool isDead, sf::Vector2f position);
+                        Ant(bool isDead, sf::Vector2f position, int radius);
 
     void                draw(sf::RenderWindow* window);
 
@@ -26,6 +26,7 @@ public:
 public:
     sf::Vector2f        mPosition;
     bool                mIsDead;
+    int                 mRadius;
     sf::Color           mColor;
     sf::RectangleShape  mBody;
 

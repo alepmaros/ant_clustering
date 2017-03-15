@@ -6,10 +6,11 @@
 
 #include "ant.h"
 
-Ant::Ant(bool isDead, sf::Vector2f position) 
+Ant::Ant(bool isDead, sf::Vector2f position, int radius)
 {
     this->mIsDead = isDead;
     this->mPosition = position;
+    this->mRadius = radius;
 
     if (isDead)
     {
