@@ -30,7 +30,8 @@ public:
 
 public:
                         Ant(bool isDead, sf::Vector2i position, int radius,
-                                Ant*** antGrid, int antSize, int mGridSize);
+                                Ant*** deadAntGrid, Ant*** aliveAntGrid, int antSize,
+                                int mGridSize);
 
     void                draw(sf::RenderWindow* window);
 
@@ -38,7 +39,11 @@ public:
     void                update();
 
     // Function used for alive ants move dead ants
-    void                move(sf::Vector2i position);
+    void                move(sf::Vector2f position);
+
+private:
+    // Function to count dead ants around the ant
+    int                 countDeadAnts();
 
 public:
     sf::Vector2f        mPosition;
@@ -50,8 +55,10 @@ public:
     Direction           mLastDirectionMoved;
     Status              mCurrentStatus;
     Ant***              deadAntGrid;
+    Ant***              aliveAntGrid;
     int                 mAntSize;
     int                 mGridSize;
+    int                 mCellsSeen;
 
 };
 

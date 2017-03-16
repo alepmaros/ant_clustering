@@ -84,7 +84,7 @@ int main()
     // Since this is a simulation and not a game I will controll the speed using
     // the frame rate. This is not recomended, but for simplicity sake I will be
     // using this for now.
-    window.setFramerateLimit(5);
+    window.setFramerateLimit(60);
 
     // Spawning the dead ants
     dead_ants.clear();
@@ -98,7 +98,7 @@ int main()
         } while(deadAntGrid[posY][posX] != nullptr);
 
         //std::cout << posX << "-" << posY << "-" << dead_ants.size() << std::endl;
-        Ant a(true, sf::Vector2i(posX, posY), radius, nullptr, antSize, spaceAvailable);
+        Ant a(true, sf::Vector2i(posX, posY), radius, nullptr, nullptr, antSize, spaceAvailable);
         dead_ants.push_back(a);
         deadAntGrid[posY][posX] = &(dead_ants[i]);
 
@@ -118,7 +118,7 @@ int main()
             posY = std::rand() % spaceAvailable;
         } while(aliveAntGrid[posY][posX] != nullptr);
 
-        Ant a(false, sf::Vector2i(posX, posY), radius, deadAntGrid, antSize, spaceAvailable);
+        Ant a(false, sf::Vector2i(posX, posY), radius, deadAntGrid, aliveAntGrid, antSize, spaceAvailable);
         alive_ants.push_back(a);
         aliveAntGrid[posY][posX] = &(alive_ants[i]);
     }
@@ -145,14 +145,15 @@ int main()
         for(std::vector<Ant>::iterator it = dead_ants.begin();
                 it != dead_ants.end(); ++it)
         {
-            it->draw(&window);
+            //std::cout << it->mGridPosition.x << "-" << it->mGridPosition.y << std::endl;
+            window.draw(it->mBody);
         }
 
         // Draw Alive Ants
         for(std::vector<Ant>::iterator it = alive_ants.begin();
                 it != alive_ants.end(); it++) 
         {
-            it->draw(&window);
+            window.draw(it->mBody);
         }
 
         window.display();
