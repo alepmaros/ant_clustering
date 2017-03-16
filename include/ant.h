@@ -13,7 +13,24 @@ class Ant
 {
 
 public:
-                        Ant(bool isDead, sf::Vector2f position, int radius);
+    enum Direction
+    {
+        North,
+        South,
+        East,
+        West
+    };
+
+    enum Status
+    {
+        Carrying,
+        Moving,
+        BeingCarried
+    };
+
+public:
+                        Ant(bool isDead, sf::Vector2i position, int radius,
+                                Ant*** antGrid, int antSize, int mGridSize);
 
     void                draw(sf::RenderWindow* window);
 
@@ -25,10 +42,16 @@ public:
 
 public:
     sf::Vector2f        mPosition;
+    sf::Vector2i        mGridPosition;
     bool                mIsDead;
     int                 mRadius;
     sf::Color           mColor;
     sf::RectangleShape  mBody;
+    Direction           mLastDirectionMoved;
+    Status              mCurrentStatus;
+    Ant***              deadAntGrid;
+    int                 mAntSize;
+    int                 mGridSize;
 
 };
 

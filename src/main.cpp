@@ -18,7 +18,6 @@
 std::vector<Ant> alive_ants;
 std::vector<Ant> dead_ants;
 
-
 /*****************
  * ANTS CONFIGS  *
  *****************/
@@ -51,16 +50,33 @@ int main()
 {
     std::srand(std::time(0));
 
-    // The antGrid is only used to check if there is an ent in an space.
-    // 'n' -- No ant
-    // 'a' -- Alive ant
-    // 'd' -- Dead ant
-    char **antGrid = (char**) malloc(sizeof(char*) * spaceAvailable);
+    // Hurray for pointer to pointer to pointer
+    Ant ***aliveAntGrid = (Ant***) malloc(sizeof(Ant**) * spaceAvailable);
     for (int i = 0; i < spaceAvailable; i++)
     {
-        antGrid[i] = (char*) malloc(sizeof(char) * spaceAvailable);
-        memset(antGrid[i], 'n', sizeof(char) * spaceAvailable);
+        aliveAntGrid[i] = (Ant**) malloc(sizeof(Ant*) * spaceAvailable);
+        for (int j = 0; j < spaceAvailable; j++)
+        {
+            aliveAntGrid[i][j] = nullptr;
+        }
     }
+
+    Ant ***deadAntGrid = (Ant***) malloc(sizeof(Ant**) * spaceAvailable);
+    for (int i = 0; i < spaceAvailable; i++)
+    {
+        deadAntGrid[i] = (Ant**) malloc(sizeof(Ant*) * spaceAvailable);
+        for (int j = 0; j < spaceAvailable; j++)
+        {
+            deadAntGrid[i][j] = nullptr;
+        }
+    }
+
+    //char **antGrid = (char**) malloc(sizeof(char*) * spaceAvailable);
+    //for (int i = 0; i < spaceAvailable; i++)
+    //{
+        //antGrid[i] = (char*) malloc(sizeof(char) * spaceAvailable);
+        //memset(antGrid[i], 'n', sizeof(char) * spaceAvailable);
+    //}
 
     // Window setup
     sf::RenderWindow window(sf::VideoMode(800, 800), "Ants");
@@ -70,23 +86,42 @@ int main()
     // using this for now.
     window.setFramerateLimit(5);
 
-
     // Spawning the dead ants
     dead_ants.clear();
     for (int i = 0; i < nDeadAnts; i++)
     {
         int posX, posY;
-        do {
+        do
+        {
             posX = std::rand() % spaceAvailable;
             posY = std::rand() % spaceAvailable;
-        } while(antGrid[posY][posX] != 'n');
+        } while(deadAntGrid[posY][posX] != nullptr);
 
         //std::cout << posX << "-" << posY << "-" << dead_ants.size() << std::endl;
-        Ant a(true, sf::Vector2f(posX * antSize, posY * antSize), radius);
-        antGrid[posY][posX] = 'd';
+        Ant a(true, sf::Vector2i(posX, posY), radius, nullptr, antSize, spaceAvailable);
         dead_ants.push_back(a);
+        deadAntGrid[posY][posX] = &(dead_ants[i]);
+
+        // Test to check if points is working
+        //std::cout << dead_ants[i].mAntSize << "-";
+        //aliveAntGrid[posY][posX]->mAntSize = 6;
+        //std::cout << dead_ants[i].mAntSize << std::endl;
     }
 
+    // Spawning Alive Ants
+    for (int i = 0; i < nAliveAnts; i++)
+    {
+        int posX, posY;
+        do
+        {
+            posX = std::rand() % spaceAvailable;
+            posY = std::rand() % spaceAvailable;
+        } while(aliveAntGrid[posY][posX] != nullptr);
+
+        Ant a(false, sf::Vector2i(posX, posY), radius, deadAntGrid, antSize, spaceAvailable);
+        alive_ants.push_back(a);
+        aliveAntGrid[posY][posX] = &(alive_ants[i]);
+    }
 
     while (window.isOpen())
     {
@@ -99,8 +134,23 @@ int main()
 
         window.clear(sf::Color::White);
 
+        // Update Alive Ants
+        for(std::vector<Ant>::iterator it = alive_ants.begin();
+                it != alive_ants.end(); it++) 
+        {
+            it->update();
+        }
+
+        // Draw Dead Ants
         for(std::vector<Ant>::iterator it = dead_ants.begin();
                 it != dead_ants.end(); ++it)
+        {
+            it->draw(&window);
+        }
+
+        // Draw Alive Ants
+        for(std::vector<Ant>::iterator it = alive_ants.begin();
+                it != alive_ants.end(); it++) 
         {
             it->draw(&window);
         }
