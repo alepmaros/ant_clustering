@@ -22,13 +22,13 @@ std::vector<Ant> dead_ants;
  * ANTS CONFIGS  *
  *****************/
 // Numer of alive and dead ants
-int         nAliveAnts  = 50;
+int         nAliveAnts  = 200;
 int         nDeadAnts   = 1000;
 // Radius that the ant can see
 // If radius == 1 the ant can see the 8 adjacents spaces
 // If radius == 2 the ant can see 8 + 16 spaces
 // etc...
-int         radius      = 2;
+int         radius      = 3;
 // Size of ants in pixels
 int         antSize     = 5;
 
@@ -50,37 +50,23 @@ int main()
 {
     std::srand(std::time(0));
 
-    // Hurray for pointer to pointer to pointer
-    Ant ***aliveAntGrid = (Ant***) malloc(sizeof(Ant**) * spaceAvailable);
-    for (int i = 0; i < spaceAvailable; i++)
-    {
-        aliveAntGrid[i] = (Ant**) malloc(sizeof(Ant*) * spaceAvailable);
-        for (int j = 0; j < spaceAvailable; j++)
-        {
-            aliveAntGrid[i][j] = nullptr;
-        }
-    }
-
-    Ant ***deadAntGrid = (Ant***) malloc(sizeof(Ant**) * spaceAvailable);
-    for (int i = 0; i < spaceAvailable; i++)
-    {
-        deadAntGrid[i] = (Ant**) malloc(sizeof(Ant*) * spaceAvailable);
-        for (int j = 0; j < spaceAvailable; j++)
-        {
-            deadAntGrid[i][j] = nullptr;
-        }
-    }
-
-    //char **antGrid = (char**) malloc(sizeof(char*) * spaceAvailable);
-    //for (int i = 0; i < spaceAvailable; i++)
-    //{
-        //antGrid[i] = (char*) malloc(sizeof(char) * spaceAvailable);
-        //memset(antGrid[i], 'n', sizeof(char) * spaceAvailable);
-    //}
-
     // Window setup
     sf::RenderWindow window(sf::VideoMode(800, 800), "Ants");
+
+    // Vector to hold ants ID
+    std::vector<std::vector<int> > aliveAntGrid;
+    std::vector<std::vector<int> > deadAntGrid;
     
+    for (int i = 0; i < spaceAvailable; i++)
+    {
+        aliveAntGrid.push_back(std::vector<int>());
+        deadAntGrid.push_back(std::vector<int>());
+        for (int j = 0; j < spaceAvailable; j++)
+        {
+            aliveAntGrid[i].push_back(-1);
+            deadAntGrid[i].push_back(-1);
+        }
+    }
     // Since this is a simulation and not a game I will controll the speed using
     // the frame rate. This is not recomended, but for simplicity sake I will be
     // using this for now.
@@ -95,12 +81,13 @@ int main()
         {
             posX = std::rand() % spaceAvailable;
             posY = std::rand() % spaceAvailable;
-        } while(deadAntGrid[posY][posX] != nullptr);
+        } while(deadAntGrid[posY][posX] != -1);
 
         //std::cout << posX << "-" << posY << "-" << dead_ants.size() << std::endl;
-        Ant a(true, sf::Vector2i(posX, posY), radius, nullptr, nullptr, antSize, spaceAvailable);
+        Ant a(i, true, sf::Vector2i(posX, posY), radius, deadAntGrid, aliveAntGrid,
+                dead_ants, alive_ants, antSize, spaceAvailable);
         dead_ants.push_back(a);
-        deadAntGrid[posY][posX] = &(dead_ants[i]);
+        deadAntGrid[posY][posX] = i;
 
         // Test to check if points is working
         //std::cout << dead_ants[i].mAntSize << "-";
@@ -116,11 +103,12 @@ int main()
         {
             posX = std::rand() % spaceAvailable;
             posY = std::rand() % spaceAvailable;
-        } while(aliveAntGrid[posY][posX] != nullptr);
+        } while(aliveAntGrid[posY][posX] != -1);
 
-        Ant a(false, sf::Vector2i(posX, posY), radius, deadAntGrid, aliveAntGrid, antSize, spaceAvailable);
+        Ant a(i, false, sf::Vector2i(posX, posY), radius, deadAntGrid, aliveAntGrid,
+               dead_ants, alive_ants, antSize, spaceAvailable);
         alive_ants.push_back(a);
-        aliveAntGrid[posY][posX] = &(alive_ants[i]);
+        aliveAntGrid[posY][posX] = i;
     }
 
     while (window.isOpen())
@@ -146,18 +134,25 @@ int main()
                 it != dead_ants.end(); ++it)
         {
             //std::cout << it->mGridPosition.x << "-" << it->mGridPosition.y << std::endl;
-            window.draw(it->mBody);
+            //window.draw(it->mBody);
+            it->draw(&window);
         }
 
         // Draw Alive Ants
         for(std::vector<Ant>::iterator it = alive_ants.begin();
                 it != alive_ants.end(); it++) 
         {
-            window.draw(it->mBody);
+            //window.draw(it->mBody);
+            it->draw(&window);
         }
 
         window.display();
     }
 
     return 0;
+}
+
+int Ant::getAntId()
+{
+    return mAntId;
 }

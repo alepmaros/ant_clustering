@@ -9,6 +9,8 @@
 
 #include <SFML/Graphics.hpp>
 
+#include <vector>
+
 class Ant
 {
 
@@ -29,8 +31,11 @@ public:
     };
 
 public:
-                        Ant(bool isDead, sf::Vector2i position, int radius,
-                                Ant*** deadAntGrid, Ant*** aliveAntGrid, int antSize,
+                        Ant(int antId, bool isDead, sf::Vector2i position, int radius,
+                                std::vector<std::vector<int> > &deadAntGrid,
+                                std::vector<std::vector<int> > &aliveAntGrid,
+                                std::vector<Ant> &deadAnts, std::vector<Ant> &aliveAnts,
+                                int antSize,
                                 int mGridSize);
 
     void                draw(sf::RenderWindow* window);
@@ -44,8 +49,10 @@ public:
 private:
     // Function to count dead ants around the ant
     int                 countDeadAnts();
+    int                 getAntId();
 
-public:
+private:
+    int                 mAntId;
     sf::Vector2f        mPosition;
     sf::Vector2i        mGridPosition;
     bool                mIsDead;
@@ -54,8 +61,10 @@ public:
     sf::RectangleShape  mBody;
     Direction           mLastDirectionMoved;
     Status              mCurrentStatus;
-    Ant***              deadAntGrid;
-    Ant***              aliveAntGrid;
+    std::vector<std::vector<int> > &mDeadAntGrid;
+    std::vector<std::vector<int> > &mAliveAntGrid;
+    std::vector<Ant>    &mDeadAnts;
+    std::vector<Ant>    &mAliveAnts;
     int                 mAntSize;
     int                 mGridSize;
     int                 mCellsSeen;

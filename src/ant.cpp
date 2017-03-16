@@ -8,15 +8,26 @@
 #include <iostream>
 #include <cstdlib>
 
-Ant::Ant(bool isDead, sf::Vector2i position, int radius, Ant*** deadAntGrid,
-        Ant*** aliveAntGrid, int antSize, int gridSize)
+Ant::Ant(int antId,
+        bool isDead,
+        sf::Vector2i position,
+        int radius,
+        std::vector<std::vector<int> > &deadAntGrid,
+        std::vector<std::vector<int> > &aliveAntGrid, 
+        std::vector<Ant> &deadAnts,
+        std::vector<Ant> &aliveAnts,
+        int antSize,
+        int gridSize)
+    : mAliveAntGrid(aliveAntGrid)
+      , mDeadAntGrid(deadAntGrid)
+      , mDeadAnts(deadAnts)
+      , mAliveAnts(aliveAnts)
 {
+    this->mAntId = antId;
     this->mIsDead = isDead;
     this->mGridPosition = position;
-    this->mPosition = sf::Vector2f(position.x * antSize, position.y * antSize);;
+    this->mPosition = sf::Vector2f(position.x * antSize, position.y * antSize);
     this->mRadius = radius;
-    this->deadAntGrid = deadAntGrid;
-    this->aliveAntGrid = aliveAntGrid;
     this->mCurrentStatus = Status::Moving;
     this->mAntSize = antSize;
     this->mGridSize = gridSize;
@@ -58,17 +69,13 @@ void Ant::draw(sf::RenderWindow *window)
 // Only alive ants should call this.
 void Ant::update()
 {
-    if (deadAntGrid[mGridPosition.y][mGridPosition.x])
-    {
-        deadAntGrid[mGridPosition.y][mGridPosition.x]->move(sf::Vector2f(mGridPosition.x, mGridPosition.y));
-    }
     if (this->mCurrentStatus == Status::Moving)
     {
         // Find another direction to move to
         // Check piles etc
         //std::cout << "There is x dead ants around me: " << deadAntCount << std::endl;
 
-        if (deadAntGrid[mGridPosition.y][mGridPosition.x])
+        if (mDeadAntGrid[mGridPosition.y][mGridPosition.x] !=  -1)
         {
             int deadAntCount = this->countDeadAnts();
             // How the chance of carrying an ant is calculated:
@@ -89,7 +96,7 @@ void Ant::update()
     }
     else
     {
-        if (deadAntGrid[mGridPosition.y][mGridPosition.x])
+        if (mDeadAntGrid[mGridPosition.y][mGridPosition.x] != -1)
         {
             int deadAntCount = this->countDeadAnts();
 
@@ -134,7 +141,7 @@ void Ant::update()
     //std::cout << "Movement: " << nextPosX << "-" << nextPosY << std::endl;
 
     // If there is an Alive ant in the next position, do nothing.
-    if (aliveAntGrid[nextPosY][nextPosX])
+    if (mAliveAntGrid[nextPosY][nextPosX] != -1)
     {
         return;
     }
@@ -142,25 +149,27 @@ void Ant::update()
     {
         // If I am carrying a dead ant and there is a dead ant in the next space
         // do nothing.
-        if (deadAntGrid[nextPosY][nextPosX])
+        if (mDeadAntGrid[nextPosY][nextPosX] != -1)
         {
             return;
         }
     }
+
     //std::cout << "2Movement: " << nextPosX << "-" << nextPosY << std::endl;
     // When implementing with multithread, lock this area.
-    aliveAntGrid[nextPosY][nextPosX] = aliveAntGrid[mGridPosition.y][mGridPosition.x];
-    aliveAntGrid[mGridPosition.y][mGridPosition.x] = nullptr;
-    //std::cout << "3Movement: " << nextPosX << "-" << nextPosY << std::endl;
+    mAliveAntGrid[nextPosY][nextPosX] = mAliveAntGrid[mGridPosition.y][mGridPosition.x];
+    mAliveAntGrid[mGridPosition.y][mGridPosition.x] = -1;
+    ////std::cout << "3Movement: " << nextPosX << "-" << nextPosY << std::endl;
     if (this->mCurrentStatus == Status::Carrying)
     {
-        //std::cout << "4Movement: " << nextPosX << "-" << nextPosY << std::endl;
-        deadAntGrid[nextPosY][nextPosX] = deadAntGrid[mGridPosition.y][mGridPosition.x];
-        //std::cout << "4Movement: " << nextPosX << "-" << nextPosY << std::endl;
-        deadAntGrid[mGridPosition.y][mGridPosition.x] = nullptr;
-        //std::cout << "4Movement: " << nextPosX << "-" << nextPosY << std::endl;
-        deadAntGrid[nextPosY][nextPosX]->move(sf::Vector2f(nextPosX,nextPosY));
-        //std::cout << "5Movement: " << nextPosX << "-" << nextPosY << std::endl;
+        ////std::cout << "4Movement: " << nextPosX << "-" << nextPosY << std::endl;
+        mDeadAntGrid[nextPosY][nextPosX] = mDeadAntGrid[mGridPosition.y][mGridPosition.x];
+        ////std::cout << "4Movement: " << nextPosX << "-" << nextPosY << std::endl;
+        mDeadAntGrid[mGridPosition.y][mGridPosition.x] = -1;
+        ////std::cout << "4Movement: " << nextPosX << "-" << nextPosY << std::endl;
+        //std::cout << mDeadAntGrid[nextPosY][nextPosX] << std::endl;
+        mDeadAnts[mDeadAntGrid[nextPosY][nextPosX]].move(sf::Vector2f(nextPosX,nextPosY));
+        ////std::cout << "5Movement: " << nextPosX << "-" << nextPosY << std::endl;
     }
 
     this->move(sf::Vector2f(nextPosX,nextPosY));
@@ -186,7 +195,7 @@ int Ant::countDeadAnts()
             posX = mGridPosition.x + j;
             if (posY >= 0 && posX >= 0 && posY < mGridSize && posX < mGridSize)
             {
-                if (deadAntGrid[posY][posX] != nullptr)
+                if (mDeadAntGrid[posY][posX] != -1)
                 {
                     deadAntCount++;
                 }
