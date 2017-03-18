@@ -23,12 +23,12 @@ std::vector<Ant> dead_ants;
  *****************/
 // Numer of alive and dead ants
 int         nAliveAnts  = 100;
-int         nDeadAnts   = 2000;
+int         nDeadAnts   = 5000;
 // Radius that the ant can see
 // If radius == 1 the ant can see the 8 adjacents spaces
 // If radius == 2 the ant can see 8 + 16 spaces
 // etc...
-int         radius      = 2;
+int         radius      = 3;
 // Size of ants in pixels
 int         antSize     = 5;
 
@@ -39,7 +39,7 @@ int         antSize     = 5;
 // Screen size in the x and y positions
 int         screenSize  = 800;
 
-int         drawIteration= 500;
+int         drawIteration= 1500;
 
 /***************
  * GRID CONFIG *

@@ -91,6 +91,11 @@ void Ant::update()
             //  To get that chance you just divide the emptyCells around the ant by the total
             //  number of cells.
             int chanceOfCarryingAnt = std::pow((mCellsSeen - deadAntCount) / ((double) mCellsSeen), 2) * 100;
+
+            if (chanceOfCarryingAnt == 0)
+                chanceOfCarryingAnt = 1;
+            else if (chanceOfCarryingAnt == 100)
+                chanceOfCarryingAnt = 99;
             //std::cout << "There is a x% chance of carrying this ant: " << chanceOfCarryingAnt << std::endl;
 
             if( (std::rand() % 101) <= chanceOfCarryingAnt)
@@ -112,6 +117,16 @@ void Ant::update()
             //std::cout << (double) deadAntCount / mCellsSeen << std::endl;
             int chanceOfDroppingAnt = (int) (std::pow( ((double) deadAntCount / mCellsSeen), 2 ) * 100);
             //std::cout << mCellsSeen << "-" << deadAntCount << "-" << chanceOfDroppingAnt << std::endl;
+            
+            if (chanceOfDroppingAnt == 0)
+            {
+                chanceOfDroppingAnt = 1;
+            }
+            else if (chanceOfDroppingAnt == 100)
+            {
+                chanceOfDroppingAnt = 99;
+            }
+
             if ( (std::rand() % 101) <= chanceOfDroppingAnt )
             {
                 //std::cout << "I dropped ant with " << chanceOfDroppingAnt << std::endl;
