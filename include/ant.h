@@ -20,7 +20,11 @@ public:
         North,
         South,
         East,
-        West
+        West,
+        NorthEast,
+        SouthEast,
+        SouthWest,
+        NorthWest
     };
 
     enum Status
@@ -50,6 +54,7 @@ private:
     // Function to count dead ants around the ant
     int                 countDeadAnts();
     int                 getAntId();
+    Direction           decideDirection();
 
 private:
     int                 mAntId;
@@ -68,6 +73,7 @@ private:
     int                 mAntSize;
     int                 mGridSize;
     int                 mCellsSeen;
+    int                 mCooldown;
 
 };
 

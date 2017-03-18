@@ -7,6 +7,7 @@
 #include "ant.h"
 #include <iostream>
 #include <cstdlib>
+#include <cmath>
 
 Ant::Ant(int antId,
         bool isDead,
@@ -31,6 +32,8 @@ Ant::Ant(int antId,
     this->mCurrentStatus = Status::Moving;
     this->mAntSize = antSize;
     this->mGridSize = gridSize;
+    this->mCooldown = 0;
+    this->mLastDirectionMoved = static_cast<Direction>(std::rand() % 4);
 
     // This is how many cells the ant will see with radius x
     // Which is the sum from 1 to radius of 8 times i
@@ -59,11 +62,16 @@ Ant::Ant(int antId,
 
 void Ant::draw(sf::RenderWindow *window)
 {
-    //while(window->isOpen())
-    //{
+    if (this->mCurrentStatus == Status::Carrying)
+    {
+        this->mBody.setFillColor(sf::Color::Blue);
+    }
+    else if (!this->mIsDead)
+    {
+        this->mBody.setFillColor(sf::Color::Black);
+    }
     window->draw(this->mBody); 
 
-    //}
 }
 
 // Only alive ants should call this.
@@ -82,10 +90,10 @@ void Ant::update()
             //  The ant will carry a dead ant if it thinks that ant does not belong to a pile.
             //  To get that chance you just divide the emptyCells around the ant by the total
             //  number of cells.
-            int chanceOfCarryingAnt = ((mCellsSeen - deadAntCount) / ((double) mCellsSeen)) * 100;
+            int chanceOfCarryingAnt = std::pow((mCellsSeen - deadAntCount) / ((double) mCellsSeen), 2) * 100;
             //std::cout << "There is a x% chance of carrying this ant: " << chanceOfCarryingAnt << std::endl;
 
-            if( (std::rand() % 101) <= chanceOfCarryingAnt )
+            if( (std::rand() % 101) <= chanceOfCarryingAnt)
             {
                 //std::cout << "I am starting to carry an ant at position " << 
                     //mGridPosition.y << " - " << mGridPosition.x << std::endl;
@@ -101,11 +109,12 @@ void Ant::update()
             int deadAntCount = this->countDeadAnts();
 
             // Explain this
-            int chanceOfDroppingAnt = (int) ((1.0 - (deadAntCount / ((double) mCellsSeen))) * 100);
+            //std::cout << (double) deadAntCount / mCellsSeen << std::endl;
+            int chanceOfDroppingAnt = (int) (std::pow( ((double) deadAntCount / mCellsSeen), 2 ) * 100);
             //std::cout << mCellsSeen << "-" << deadAntCount << "-" << chanceOfDroppingAnt << std::endl;
             if ( (std::rand() % 101) <= chanceOfDroppingAnt )
             {
-                //std::cout << "I dropped ant" << std::endl;
+                //std::cout << "I dropped ant with " << chanceOfDroppingAnt << std::endl;
                 this->mCurrentStatus = Status::Moving;
             }
         }
@@ -113,7 +122,10 @@ void Ant::update()
 
     // Perform Movement
 
-    Direction whereToMove = static_cast<Direction>((std::rand() % 4));
+    //Direction whereToMove = this->decideDirection(); 
+    //Direction whereToMove = static_cast<Direction>(std::rand() % 4);
+    Direction whereToMove = static_cast<Direction>(std::rand() % 8);
+
     int nextPosY = mGridPosition.y;
     int nextPosX = mGridPosition.x;
     switch(whereToMove)
@@ -128,6 +140,22 @@ void Ant::update()
             nextPosX++;
             break;
         case Direction::West:
+            nextPosX--;
+            break;
+        case Direction::NorthEast:
+            nextPosY--;
+            nextPosX++;
+            break;
+        case Direction::SouthEast:
+            nextPosY++;
+            nextPosX++;
+            break;
+        case Direction::SouthWest:
+            nextPosY++;
+            nextPosX--;
+            break;
+        case Direction::NorthWest:
+            nextPosY--;
             nextPosX--;
             break;
     }
@@ -155,25 +183,17 @@ void Ant::update()
         }
     }
 
-    //std::cout << "2Movement: " << nextPosX << "-" << nextPosY << std::endl;
     // When implementing with multithread, lock this area.
     mAliveAntGrid[nextPosY][nextPosX] = mAliveAntGrid[mGridPosition.y][mGridPosition.x];
     mAliveAntGrid[mGridPosition.y][mGridPosition.x] = -1;
-    ////std::cout << "3Movement: " << nextPosX << "-" << nextPosY << std::endl;
     if (this->mCurrentStatus == Status::Carrying)
     {
-        ////std::cout << "4Movement: " << nextPosX << "-" << nextPosY << std::endl;
         mDeadAntGrid[nextPosY][nextPosX] = mDeadAntGrid[mGridPosition.y][mGridPosition.x];
-        ////std::cout << "4Movement: " << nextPosX << "-" << nextPosY << std::endl;
         mDeadAntGrid[mGridPosition.y][mGridPosition.x] = -1;
-        ////std::cout << "4Movement: " << nextPosX << "-" << nextPosY << std::endl;
-        //std::cout << mDeadAntGrid[nextPosY][nextPosX] << std::endl;
         mDeadAnts[mDeadAntGrid[nextPosY][nextPosX]].move(sf::Vector2f(nextPosX,nextPosY));
-        ////std::cout << "5Movement: " << nextPosX << "-" << nextPosY << std::endl;
     }
 
     this->move(sf::Vector2f(nextPosX,nextPosY));
-    //std::cout << "6Movement: " << nextPosX << "-" << nextPosY << std::endl;
 }
 
 void Ant::move(sf::Vector2f nextPos)
@@ -203,4 +223,59 @@ int Ant::countDeadAnts()
         }
     }
     return deadAntCount;
+}
+
+Ant::Direction Ant::decideDirection()
+{
+    Direction whereToMove;
+    int movement = std::rand() % 22;
+    if (movement >= 0 && movement < 6)
+    {
+        return mLastDirectionMoved;
+    }
+    else if (movement >= 6 && movement < 12)
+    {
+        if (mLastDirectionMoved == 2)
+        {
+            return Direction::West;
+        }
+        else if (mLastDirectionMoved == 3)
+        {
+            return Direction::North;
+        }
+        else
+        {
+            return static_cast<Direction>(mLastDirectionMoved+1);
+        }
+    }
+    else if (movement >= 12 && movement < 18)
+    {
+        if (mLastDirectionMoved == 1)
+        {
+            return Direction::West;
+        }
+        else if (mLastDirectionMoved == 2)
+        {
+           return Direction::North; 
+        }
+        else if (mLastDirectionMoved == 3)
+        {
+            return Direction::South;
+        }
+        else
+        {
+            return Direction::East;
+        }
+    }
+    else
+    {
+        if(mLastDirectionMoved == 0)
+        {
+            return Direction::West; 
+        }
+        else
+        {
+            return static_cast<Direction>(mLastDirectionMoved-1);
+        }
+    }
 }

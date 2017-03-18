@@ -22,13 +22,13 @@ std::vector<Ant> dead_ants;
  * ANTS CONFIGS  *
  *****************/
 // Numer of alive and dead ants
-int         nAliveAnts  = 200;
-int         nDeadAnts   = 1000;
+int         nAliveAnts  = 100;
+int         nDeadAnts   = 2000;
 // Radius that the ant can see
 // If radius == 1 the ant can see the 8 adjacents spaces
 // If radius == 2 the ant can see 8 + 16 spaces
 // etc...
-int         radius      = 3;
+int         radius      = 2;
 // Size of ants in pixels
 int         antSize     = 5;
 
@@ -39,6 +39,7 @@ int         antSize     = 5;
 // Screen size in the x and y positions
 int         screenSize  = 800;
 
+int         drawIteration= 500;
 
 /***************
  * GRID CONFIG *
@@ -70,7 +71,7 @@ int main()
     // Since this is a simulation and not a game I will controll the speed using
     // the frame rate. This is not recomended, but for simplicity sake I will be
     // using this for now.
-    window.setFramerateLimit(60);
+    window.setFramerateLimit(20);
 
     // Spawning the dead ants
     dead_ants.clear();
@@ -111,6 +112,7 @@ int main()
         aliveAntGrid[posY][posX] = i;
     }
 
+    int iterations = 0;
     while (window.isOpen())
     {
         sf::Event event;
@@ -120,7 +122,6 @@ int main()
                 window.close();
         }
 
-        window.clear(sf::Color::White);
 
         // Update Alive Ants
         for(std::vector<Ant>::iterator it = alive_ants.begin();
@@ -129,24 +130,31 @@ int main()
             it->update();
         }
 
-        // Draw Dead Ants
-        for(std::vector<Ant>::iterator it = dead_ants.begin();
-                it != dead_ants.end(); ++it)
+        if (iterations == 0)
         {
-            //std::cout << it->mGridPosition.x << "-" << it->mGridPosition.y << std::endl;
-            //window.draw(it->mBody);
-            it->draw(&window);
-        }
+            window.clear(sf::Color::White);
 
-        // Draw Alive Ants
-        for(std::vector<Ant>::iterator it = alive_ants.begin();
-                it != alive_ants.end(); it++) 
-        {
-            //window.draw(it->mBody);
-            it->draw(&window);
-        }
+            // Draw Dead Ants
+            for(std::vector<Ant>::iterator it = dead_ants.begin();
+                    it != dead_ants.end(); ++it)
+            {
+                //std::cout << it->mGridPosition.x << "-" << it->mGridPosition.y << std::endl;
+                //window.draw(it->mBody);
+                it->draw(&window);
+            }
 
-        window.display();
+            // Draw Alive Ants
+            for(std::vector<Ant>::iterator it = alive_ants.begin();
+                    it != alive_ants.end(); it++) 
+            {
+                //window.draw(it->mBody);
+                it->draw(&window);
+            }
+
+            window.display();
+            iterations = drawIteration;
+        }
+        iterations--;
     }
 
     return 0;
