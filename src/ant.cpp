@@ -37,7 +37,7 @@ Ant::Ant(int antId,
 
     // This is how many cells the ant will see with radius x
     // Which is the sum from 1 to radius of 8 times i
-    this->mCellsSeen = 0;
+    this->mCellsSeen = 1;
     for (int i = 1; i <= radius; i++)
     {
         this->mCellsSeen += 8 * i;
@@ -57,8 +57,6 @@ Ant::Ant(int antId,
     this->mBody.setFillColor(this->mColor);
     this->mBody.setPosition(this->mPosition);
 }
-
-
 
 void Ant::draw(sf::RenderWindow *window)
 {
@@ -93,9 +91,13 @@ void Ant::update()
             int chanceOfCarryingAnt = std::pow((mCellsSeen - deadAntCount) / ((double) mCellsSeen), 2) * 100;
 
             if (chanceOfCarryingAnt == 0)
+            {
                 chanceOfCarryingAnt = 1;
+            }
             else if (chanceOfCarryingAnt == 100)
+            {
                 chanceOfCarryingAnt = 99;
+            }
             //std::cout << "There is a x% chance of carrying this ant: " << chanceOfCarryingAnt << std::endl;
 
             if( (std::rand() % 101) <= chanceOfCarryingAnt)
@@ -113,8 +115,11 @@ void Ant::update()
         {
             int deadAntCount = this->countDeadAnts();
 
-            // Explain this
             //std::cout << (double) deadAntCount / mCellsSeen << std::endl;
+
+            // deadAntCount = how many dead ants in the ants FOV
+            // mCellsSeen = how many cells can the ant see
+            // ( deadAntCount / mCellsSeen ) ^ 2
             int chanceOfDroppingAnt = (int) (std::pow( ((double) deadAntCount / mCellsSeen), 2 ) * 100);
             //std::cout << mCellsSeen << "-" << deadAntCount << "-" << chanceOfDroppingAnt << std::endl;
             
@@ -137,8 +142,6 @@ void Ant::update()
 
     // Perform Movement
 
-    //Direction whereToMove = this->decideDirection(); 
-    //Direction whereToMove = static_cast<Direction>(std::rand() % 4);
     Direction whereToMove = static_cast<Direction>(std::rand() % 8);
 
     int nextPosY = mGridPosition.y;
@@ -175,13 +178,17 @@ void Ant::update()
             break;
     }
 
-    // If next movement is invalid
-    if (nextPosY < 0 || nextPosY >= mGridSize || nextPosX < 0 || nextPosX >= mGridSize)
-    {
-        return;
-    }
 
-    //std::cout << "Movement: " << nextPosX << "-" << nextPosY << std::endl;
+    // This is to remove border limitations for the ants. They will loop back now.
+    if (nextPosY < 0)
+        nextPosY = mGridSize + nextPosY;
+    if (nextPosY >= mGridSize)
+        nextPosY = nextPosY - mGridSize;
+    if (nextPosX < 0)
+        nextPosX = mGridSize + nextPosX;
+    if (nextPosX >= mGridSize)
+        nextPosX = nextPosX - mGridSize;
+
 
     // If there is an Alive ant in the next position, do nothing.
     if (mAliveAntGrid[nextPosY][nextPosX] != -1)
@@ -199,8 +206,12 @@ void Ant::update()
     }
 
     // When implementing with multithread, lock this area.
+    //
+    // Switch the position of the alive ant to the new position
     mAliveAntGrid[nextPosY][nextPosX] = mAliveAntGrid[mGridPosition.y][mGridPosition.x];
     mAliveAntGrid[mGridPosition.y][mGridPosition.x] = -1;
+
+    // If the ant is carrying another one, switch the position of the dead ant as well
     if (this->mCurrentStatus == Status::Carrying)
     {
         mDeadAntGrid[nextPosY][nextPosX] = mDeadAntGrid[mGridPosition.y][mGridPosition.x];
@@ -228,69 +239,26 @@ int Ant::countDeadAnts()
         {
             posY = mGridPosition.y + i;
             posX = mGridPosition.x + j;
-            if (posY >= 0 && posX >= 0 && posY < mGridSize && posX < mGridSize)
+
+                // This is to remove border limitations for the ants. They will loop back now.
+            if (posY < 0)
+                posY = mGridSize + posY;
+            if (posY >= mGridSize)
+                posY = posY - mGridSize;
+            if (posX < 0)
+                posX = mGridSize + posX;
+            if (posX >= mGridSize)
+                posX = posX - mGridSize;
+
+            if (mDeadAntGrid[posY][posX] != -1)
             {
-                if (mDeadAntGrid[posY][posX] != -1)
-                {
-                    deadAntCount++;
-                }
+                deadAntCount++;
             }
         }
     }
     return deadAntCount;
 }
-
-Ant::Direction Ant::decideDirection()
+int Ant::getAntId()
 {
-    Direction whereToMove;
-    int movement = std::rand() % 22;
-    if (movement >= 0 && movement < 6)
-    {
-        return mLastDirectionMoved;
-    }
-    else if (movement >= 6 && movement < 12)
-    {
-        if (mLastDirectionMoved == 2)
-        {
-            return Direction::West;
-        }
-        else if (mLastDirectionMoved == 3)
-        {
-            return Direction::North;
-        }
-        else
-        {
-            return static_cast<Direction>(mLastDirectionMoved+1);
-        }
-    }
-    else if (movement >= 12 && movement < 18)
-    {
-        if (mLastDirectionMoved == 1)
-        {
-            return Direction::West;
-        }
-        else if (mLastDirectionMoved == 2)
-        {
-           return Direction::North; 
-        }
-        else if (mLastDirectionMoved == 3)
-        {
-            return Direction::South;
-        }
-        else
-        {
-            return Direction::East;
-        }
-    }
-    else
-    {
-        if(mLastDirectionMoved == 0)
-        {
-            return Direction::West; 
-        }
-        else
-        {
-            return static_cast<Direction>(mLastDirectionMoved-1);
-        }
-    }
+    return mAntId;
 }

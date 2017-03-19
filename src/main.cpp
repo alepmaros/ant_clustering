@@ -23,7 +23,7 @@ std::vector<Ant> dead_ants;
  *****************/
 // Numer of alive and dead ants
 int         nAliveAnts  = 100;
-int         nDeadAnts   = 5000;
+int         nDeadAnts   = 3000;
 // Radius that the ant can see
 // If radius == 1 the ant can see the 8 adjacents spaces
 // If radius == 2 the ant can see 8 + 16 spaces
@@ -32,14 +32,14 @@ int         radius      = 3;
 // Size of ants in pixels
 int         antSize     = 5;
 
-
 /******************
  * SCREEN CONFIG  *
  ******************/
 // Screen size in the x and y positions
 int         screenSize  = 800;
 
-int         drawIteration= 1500;
+// How many iterations should it calculated before drawing to the screen.
+int         drawIterations = 200;
 
 /***************
  * GRID CONFIG *
@@ -47,12 +47,26 @@ int         drawIteration= 1500;
 // Space available to put the ants (grid size)
 int         spaceAvailable = (int) 800.0 / 5.0;
 
+// Varaible to hold text to draw on the screen
+char c[20];
+
 int main()
 {
     std::srand(std::time(0));
+    sf::Clock clock;
+    float lastTime;
+
+    sf::Font font;
+    font.loadFromFile("fonts/Roboto-Black.ttf");
 
     // Window setup
     sf::RenderWindow window(sf::VideoMode(800, 800), "Ants");
+
+    // Since this is a simulation and not a game I will controll the speed using
+    // the frame rate. This is not recomended, but for simplicity sake I will be
+    // using this for now.
+    //window.setFramerateLimit(20);
+
 
     // Vector to hold ants ID
     std::vector<std::vector<int> > aliveAntGrid;
@@ -68,10 +82,6 @@ int main()
             deadAntGrid[i].push_back(-1);
         }
     }
-    // Since this is a simulation and not a game I will controll the speed using
-    // the frame rate. This is not recomended, but for simplicity sake I will be
-    // using this for now.
-    window.setFramerateLimit(20);
 
     // Spawning the dead ants
     dead_ants.clear();
@@ -90,10 +100,6 @@ int main()
         dead_ants.push_back(a);
         deadAntGrid[posY][posX] = i;
 
-        // Test to check if points is working
-        //std::cout << dead_ants[i].mAntSize << "-";
-        //aliveAntGrid[posY][posX]->mAntSize = 6;
-        //std::cout << dead_ants[i].mAntSize << std::endl;
     }
 
     // Spawning Alive Ants
@@ -115,52 +121,57 @@ int main()
     int iterations = 0;
     while (window.isOpen())
     {
-        sf::Event event;
-        while (window.pollEvent(event))
+
+        for (int nIterations = 0; nIterations < drawIterations; nIterations++)
         {
-            if (event.type == sf::Event::Closed)
-                window.close();
-        }
-
-
-        // Update Alive Ants
-        for(std::vector<Ant>::iterator it = alive_ants.begin();
-                it != alive_ants.end(); it++) 
-        {
-            it->update();
-        }
-
-        if (iterations == 0)
-        {
-            window.clear(sf::Color::White);
-
-            // Draw Dead Ants
-            for(std::vector<Ant>::iterator it = dead_ants.begin();
-                    it != dead_ants.end(); ++it)
+            sf::Event event;
+            while (window.pollEvent(event))
             {
-                //std::cout << it->mGridPosition.x << "-" << it->mGridPosition.y << std::endl;
-                //window.draw(it->mBody);
-                it->draw(&window);
+                if (event.type == sf::Event::Closed)
+                    window.close();
             }
 
-            // Draw Alive Ants
+
+            // Update Alive Ants
             for(std::vector<Ant>::iterator it = alive_ants.begin();
                     it != alive_ants.end(); it++) 
             {
-                //window.draw(it->mBody);
-                it->draw(&window);
+                it->update();
             }
-
-            window.display();
-            iterations = drawIteration;
         }
-        iterations--;
+        
+        window.clear(sf::Color::White);
+
+        // Draw Dead Ants
+        for(std::vector<Ant>::iterator it = dead_ants.begin();
+                it != dead_ants.end(); ++it)
+        {
+            it->draw(&window);
+        }
+
+        // Draw Alive Ants
+        for(std::vector<Ant>::iterator it = alive_ants.begin();
+                it != alive_ants.end(); it++) 
+        {
+            it->draw(&window);
+        }
+
+        // Frames per second calculation
+        float currentTime = clock.restart().asSeconds();
+        float fps = 1.f / lastTime;
+        lastTime = currentTime;
+
+        sprintf(c, "%f", fps);
+        std::string string(c);
+        sf::String str(string);
+        sf::Text text(str, font);
+        text.setFillColor(sf::Color::Black);
+        window.draw(text);
+
+        window.display();
     }
 
     return 0;
 }
 
-int Ant::getAntId()
-{
-    return mAntId;
-}
+
