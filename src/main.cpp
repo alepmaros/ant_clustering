@@ -23,7 +23,7 @@ std::vector<Ant> dead_ants;
  *****************/
 // Numer of alive and dead ants
 int         nAliveAnts  = 100;
-int         nDeadAnts   = 3000;
+int         nDeadAnts   = 7000;
 // Radius that the ant can see
 // If radius == 1 the ant can see the 8 adjacents spaces
 // If radius == 2 the ant can see 8 + 16 spaces
@@ -39,7 +39,15 @@ int         antSize     = 5;
 int         screenSize  = 800;
 
 // How many iterations should it calculated before drawing to the screen.
-int         drawIterations = 200;
+int         drawIterations = 1000;
+
+// nIterations == how many iterations it already did
+// maxIterations == the number max of iterations to do
+unsigned long nIterations   = 0;
+unsigned long maxIterations = 1000000;
+
+// Variable to hold how many time has passed since the simulation begun
+float         elapsedTime   = 0.0;
 
 /***************
  * GRID CONFIG *
@@ -54,6 +62,7 @@ int main()
 {
     std::srand(std::time(0));
     sf::Clock clock;
+    sf::Clock stopwatch;
     float lastTime;
 
     sf::Font font;
@@ -118,11 +127,11 @@ int main()
         aliveAntGrid[posY][posX] = i;
     }
 
-    int iterations = 0;
+    stopwatch.restart();
     while (window.isOpen())
     {
 
-        for (int nIterations = 0; nIterations < drawIterations; nIterations++)
+        for (int i = 0; i < drawIterations; i++)
         {
             sf::Event event;
             while (window.pollEvent(event))
@@ -131,12 +140,15 @@ int main()
                     window.close();
             }
 
-
             // Update Alive Ants
-            for(std::vector<Ant>::iterator it = alive_ants.begin();
-                    it != alive_ants.end(); it++) 
+            if (nIterations < maxIterations)
             {
-                it->update();
+                for(std::vector<Ant>::iterator it = alive_ants.begin();
+                        it != alive_ants.end(); it++) 
+                {
+                    it->update();
+                }
+                nIterations++;
             }
         }
         
@@ -150,10 +162,13 @@ int main()
         }
 
         // Draw Alive Ants
-        for(std::vector<Ant>::iterator it = alive_ants.begin();
-                it != alive_ants.end(); it++) 
+        if (nIterations < maxIterations)
         {
-            it->draw(&window);
+            for(std::vector<Ant>::iterator it = alive_ants.begin();
+                    it != alive_ants.end(); it++) 
+            {
+                it->draw(&window);
+            }
         }
 
         // Frames per second calculation
@@ -161,12 +176,29 @@ int main()
         float fps = 1.f / lastTime;
         lastTime = currentTime;
 
-        sprintf(c, "%f", fps);
+        // How many time has passed since the simulation has begun
+        if ( nIterations < maxIterations)
+        {
+            elapsedTime = stopwatch.getElapsedTime().asSeconds();
+        }
+
+        // Draw the FPS
+        sprintf(c, "%f", elapsedTime);
         std::string string(c);
         sf::String str(string);
         sf::Text text(str, font);
         text.setFillColor(sf::Color::Black);
         window.draw(text);
+
+        // Draw how many iterations already happened
+        sprintf(c, "%lu", nIterations);
+        std::string string2(c);
+        sf::String str2(string2);
+        sf::Text text2(str2, font);
+        text2.setFillColor(sf::Color::Black);
+        text2.setPosition(0,40);
+        window.draw(text2);
+
 
         window.display();
     }

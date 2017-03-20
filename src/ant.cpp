@@ -240,7 +240,7 @@ int Ant::countDeadAnts()
             posY = mGridPosition.y + i;
             posX = mGridPosition.x + j;
 
-                // This is to remove border limitations for the ants. They will loop back now.
+            // This is to remove border limitations for the ants. They will loop back now.
             if (posY < 0)
                 posY = mGridSize + posY;
             if (posY >= mGridSize)
