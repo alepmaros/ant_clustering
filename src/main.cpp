@@ -76,7 +76,6 @@ int main()
     // using this for now.
     //window.setFramerateLimit(20);
 
-
     // Vector to hold ants ID
     std::vector<std::vector<int> > aliveAntGrid;
     std::vector<std::vector<int> > deadAntGrid;
