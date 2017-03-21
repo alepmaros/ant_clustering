@@ -2,18 +2,16 @@
 
 \usepackage{sbc-template}
 
-\usepackage{graphicx,url}
 
-\usepackage[brazil]{babel}
 %\usepackage[latin1]{inputenc}  
-\usepackage[T1]{fontenc}
 %\usepackage[utf8]{inputenc}  
+
+\usepackage{graphicx,url}
+\usepackage[brazil]{babel}
+\usepackage[T1]{fontenc}
 \usepackage{amsmath}
 \usepackage{listings}
 
-%\lstset{
-    %numbers=left
-%}
 \lstset{
   frame=top,frame=bottom,
   basicstyle=\small\normalfont\sffamily,    % the size of the fonts that are used for the code
@@ -53,12 +51,18 @@
 
 \maketitle
 
-\begin{abstract}
-    Abstract
-\end{abstract}
+%\begin{abstract}
+    %Abstract
+%\end{abstract}
      
 \begin{resumo} 
-    Resumo
+    \textit{Ant-clustering} é uma técnica de agrupamento baseado na noção de inteligência
+    de exames. Tal conceito é amplamente utilizado para resolver problemas numéricos
+    e combinatoriais e vem apresentando bons resultados. Este relatório pretende explorar
+    um comportamento específico de formigas que tem como objetivo final o agrupamento de 
+    formigas mortas para liberar espaço do ambiente. Aqui será visto alguns conceitos, onde
+    isso é aplicado, como isso é aplicado e alguns testes baseado no algorítimo aqui
+    construído.
 \end{resumo}
 
 % 1. Introdução
@@ -253,6 +257,22 @@ P_{s} = \biggl( \dfrac{n_{mortas}}{n_{total}} \biggr)^2 \times 100
 \section{Experimentos, resultados e análises}
 
 Blurgh
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=.7\textwidth]{figuras/ants_seed1.png}
+\caption{Agrupamento de formigas com a mesma semente.}
+\label{fig:ant_seed1}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=.7\textwidth]{figuras/ants_random1.png}
+\caption{Agrupamento de formigas com a sementes diferentes.}
+\label{fig:ant_random1}
+\end{figure}
+
+
 
 % 5. Conclusão
 %   Considerações sobre o trabalho e sobre os resultados obtidos, trabalhos futuros.

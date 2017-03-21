@@ -23,12 +23,12 @@ std::vector<Ant> dead_ants;
  *****************/
 // Numer of alive and dead ants
 int         nAliveAnts  = 100;
-int         nDeadAnts   = 7000;
+int         nDeadAnts   = 6000;
 // Radius that the ant can see
 // If radius == 1 the ant can see the 8 adjacents spaces
 // If radius == 2 the ant can see 8 + 16 spaces
 // etc...
-int         radius      = 3;
+int         radius      = 5;
 // Size of ants in pixels
 int         antSize     = 5;
 
@@ -39,12 +39,12 @@ int         antSize     = 5;
 int         screenSize  = 800;
 
 // How many iterations should it calculated before drawing to the screen.
-int         drawIterations = 1000;
+int         drawIterations = 500;
 
 // nIterations == how many iterations it already did
 // maxIterations == the number max of iterations to do
 unsigned long nIterations   = 0;
-unsigned long maxIterations = 1000000;
+unsigned long maxIterations = 4000000;
 
 // Variable to hold how many time has passed since the simulation begun
 float         elapsedTime   = 0.0;
