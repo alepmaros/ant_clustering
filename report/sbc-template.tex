@@ -189,13 +189,13 @@ das formigas (Algorítimo~\ref{lst:alg2}).
     Caso a formiga não esteja carregando uma morta:
     |   Se há uma formiga morta na posição atual:
     |   |   Calcule a probabilidade de carregar com a Fórmula (*\ref{eq:carregar}*)
-    |   |   Sorteie um número aleatorio entre 0 e 100
+    |   |   Sorteie um inteiro aleatorio entre 0 e 100
     |   |   Se o número for menor ou igual a probabilidade:
     |   |   |   Pegue a formiga morta
     Caso a formiga já esteja carregando uma morta:
     |   Caso esteja em um espaço vazio:
     |   |   Calcule a probabilidade de soltar com a Fórmula (*\ref{eq:soltar}*)
-    |   |   Sorteie um número aleatorio entre 0 e 100
+    |   |   Sorteie um inteiro aleatorio entre 0 e 100
     |   |   Se o número for menor ou igual a probabilidade:
     |   |   |   Solte a formiga
 
@@ -221,7 +221,12 @@ A fórmula para decidir se a formiga deve começar a carregar uma formiga morta é
 definida da seguinte forma:
 
 \begin{equation} \label{eq:carregar}
-P_{c} = \biggl(\dfrac{n_{vazios}}{n_{total}}\biggr)^2 \times 100
+P_{c} = 
+    \begin{cases}
+        \biggl(\dfrac{n_{vazios}}{n_{total}}\biggr)^2 \times 100, & \text{if } n_{vazios} \neq n_{total} \\
+        99, & \text{if } n_{vazios} = n_{total} \\
+        1, & \text{if } n_{vazios} = 0
+    \end{cases}
 \end{equation}
 
 \begin{flushleft}
@@ -238,7 +243,12 @@ Já a fórmula para decidir se a formiga deve soltar a formiga morta que esta carr
 dada por:
 
 \begin{equation} \label{eq:soltar}
-P_{s} = \biggl( \dfrac{n_{mortas}}{n_{total}} \biggr)^2 \times 100
+P_{s} =
+    \begin{cases}
+        \biggl( \dfrac{n_{mortas}}{n_{total}} \biggr)^2 \times 100,& \text{if } n_{mortas} \neq  n_{total} \\
+        99, & \text{if } n_{mortas} = n_{total} \\
+        1, & \text{if } n_{mortas} = 0
+    \end{cases}
 \end{equation}
 
 \begin{flushleft}
