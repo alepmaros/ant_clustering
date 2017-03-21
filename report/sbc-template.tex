@@ -9,6 +9,34 @@
 \usepackage[T1]{fontenc}
 %\usepackage[utf8]{inputenc}  
 \usepackage{amsmath}
+\usepackage{listings}
+
+%\lstset{
+    %numbers=left
+%}
+\lstset{
+  frame=top,frame=bottom,
+  basicstyle=\small\normalfont\sffamily,    % the size of the fonts that are used for the code
+  stepnumber=1,                           % the step between two line-numbers. If it is 1 each line will be numbered
+  numbersep=10pt,                         % how far the line-numbers are from the code
+  tabsize=2,                              % tab size in blank spaces
+  extendedchars=true,                     %
+  breaklines=true,                        % sets automatic line breaking
+  captionpos=t,                           % sets the caption-position to top
+  mathescape=true,
+  stringstyle=\color{white}\ttfamily, % Farbe der String
+  showspaces=false,           % Leerzeichen anzeigen ?
+  showtabs=false,             % Tabs anzeigen ?
+  numbers=left,
+  framexleftmargin=17pt,
+  framexrightmargin=17pt,
+  framexbottommargin=5pt,
+  framextopmargin=5pt,
+  showstringspaces=false      % Leerzeichen in Strings anzeigen ?
+ }
+
+
+\renewcommand\lstlistingname{Algorítimo}
 
 \sloppy
 
@@ -129,7 +157,9 @@ de observação da formiga viva, maior a chance dela deixar a formiga morta naquel
   \item \textbf{Estático}\footnote{O trabalho não foi implementado com 
         \textit{Threads}, caso contrário seria dinâmico}: uma formiga não pode afetar o ambiente
      enquanto outra está atuando;
- \item \textbf{Discreto}: Todos os elementos do ambiente são contáveis;
+ \item \textbf{Discreto}\footnote{Na vida real seria contínuo já que a movimentação
+         é contínua e não discreta, entretanto,
+         aqui estamos lidando com uma grid de posições finitas}: Todos os elementos do ambiente são contáveis;
  \item \textbf{Multiagente}: Há diversas formigas atuando sobre o mesmo ambiente.
 \end{itemize}
 
@@ -138,7 +168,53 @@ de observação da formiga viva, maior a chance dela deixar a formiga morta naquel
 \section{Modelo implementado}
 
 O trabalho foi implementado utilizando a linguagem C++ e a biblioteca gráfica
-SFML (\textit{Simple and Fast Multimedia Library}).
+SFML (\textit{Simple and Fast Multimedia Library}). A implementação pode ser divida
+em duas grandes partes, o \textit{loop} principal (Algorítimo~\ref{lst:alg1}) e a função de atualização
+das formigas (Algorítimo~\ref{lst:alg2}).
+
+\begin{lstlisting}[escapeinside={(*}{*)},caption={Loop principal},label={lst:alg1}]
+    Cria tabuleiro (*$n \times n$*)
+    Popule o tabuleiro com (*$x$*) formigas mortas 
+    Popule o tabuleiro com (*$y$*) formigas vivas
+    Enquanto não calculou todas as iterações:
+    |   Para cada formiga viva:
+    |   |   Atualize seus movimentos
+\end{lstlisting}
+
+\begin{lstlisting}[escapeinside={(*}{*)}, caption={Atualização da Formiga},label={lst:alg2}]
+    Caso a formiga não esteja carregando uma morta:
+    |   Se há uma formiga morta na posição atual:
+    |   |   Calcule a probabilidade de carregar com a Fórmula (*\ref{eq:carregar}*)
+    |   |   Sorteie um número aleatorio entre 0 e 100
+    |   |   Se o número for menor ou igual a probabilidade:
+    |   |   |   Pegue a formiga morta
+    Caso a formiga já esteja carregando uma morta:
+    |   Caso esteja em um espaço vazio:
+    |   |   Calcule a probabilidade de soltar com a Fórmula (*\ref{eq:soltar}*)
+    |   |   Sorteie um número aleatorio entre 0 e 100
+    |   |   Se o número for menor ou igual a probabilidade:
+    |   |   |   Solte a formiga
+
+    Mova para uma posição aleatória
+\end{lstlisting}
+
+Após a inicialização e população do tabuleiro, será executada um número de iterações fixas,
+sendo que uma iteração corresponde ao movimento de todas as formigas vivas no tabuleiro. 
+Como o desenho do tabuleiro é algo demorado, é possível configurar quantas interações são
+necessárias para que o tabuleiro seja redesenhado.
+
+Da forma com que foi implementada, a ação das formigas são sequenciais, isto é, uma formiga
+age apenas após a outra completar seu movimento, sem que aja sobreposição de ações.
+Isso ocorre pois não há a utilização de processamento paralelo (\textit{threads}).
+As formigas podem se mover na diagonal, dessa forma existem 8 possíveis direções de 
+movimento.
+
+Outro ponto importante para notar é que não há bordas no tabuleiro, ou seja, uma formiga
+que está no extremo direito do tabuleiro, ao andar uma casa para a direita, chegará
+na posição extrema esquerda, como se o tabuleiro fosse na verdade um globo.
+
+A fórmula para decidir se a formiga deve começar a carregar uma formiga morta é
+definida da seguinte forma:
 
 \begin{equation} \label{eq:carregar}
 P_{c} = \biggl(\dfrac{n_{vazios}}{n_{total}}\biggr)^2 \times 100
@@ -153,6 +229,9 @@ P_{c} = \biggl(\dfrac{n_{vazios}}{n_{total}}\biggr)^2 \times 100
     \item $n_{vazios}$ é o número de espaços observados sem formigas mortas;
     \item $n_{total}$ é o número total de espaços observados pela formiga
 \end{itemize}
+
+Já a fórmula para decidir se a formiga deve soltar a formiga morta que esta carregando é
+dada por:
 
 \begin{equation} \label{eq:soltar}
 P_{s} = \biggl( \dfrac{n_{mortas}}{n_{total}} \biggr)^2 \times 100
