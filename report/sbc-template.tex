@@ -4,10 +4,12 @@
 
 \usepackage{graphicx,url}
 
-%\usepackage[brazil]{babel}   
-\usepackage[latin1]{inputenc}  
+\usepackage[brazil]{babel}
+%\usepackage[latin1]{inputenc}  
+\usepackage[T1]{fontenc}
+%\usepackage[utf8]{inputenc}  
+\usepackage{amsmath}
 
-     
 \sloppy
 
 \title{Ant Clustering}
@@ -31,17 +33,153 @@
     Resumo
 \end{resumo}
 
+% 1. Introdução
+%   Contextualização do problema, justificativa, objetivos, estrutura do relatório.
+\section{Introdução}
 
-\section{General Information}
+O agrupamento baseado em formigas é uma técnica de agrupamento bioinspirada baseado
+na noção de inteligência de enxame \cite{abraham2006swarm} que é um paradigma
+de inteligência distribuída para resolver problemas de otimização 
+que surgiram com o estudo colônias, enxames ou organismos sociais. Agrupamento com
+algorítimos de inteligência de enxames vem sendo amplamente utilizados
+para resolver problemas numéricos e combinatoriais \cite{jafar2010ant} e vem crescendo
+bastante pois vem mostrando produzir bons resultados nessas aplicações.
 
-Bla
+Formigas pertencem a um grupo social. Sozinhas elas não conseguem sobreviver por muito
+tempo. Entretanto, quando convivendo em um grande grupo, algumas padrões interessantes
+são observados, como por exemplo quando elas estão a procura de formiga. Primeiramente,
+diversas formigas procuram aleatoriamente no terreno em que elas se encontram, deixando
+um rastro de feromônios. Essa substância é notada por outras formigas que ajudam em sua
+próxima decisão (devo ir para um caminho já visitado?). Com o passar do tempo, uma 
+solução incremental é construída. A quantidade de feromônios em um determinado caminho
+equivale ao número de formigas que passaram por lá. As comunicações entre as formigas não
+são diretas, mas sim através de modificações do ambiente \cite{jafar2010ant}.
 
-%\begin{figure}[ht]
-%\centering
-%\includegraphics[width=.5\textwidth]{fig1.jpg}
-%\caption{A typical figure}
-%\label{fig:exampleFig1}
-%\end{figure}
+O comportamento estudado nesse artigo é o de organização de itens dispostos em um
+espaço físico. Como observado na Figura~\ref{fig:ant1}, quando formigas vivas são
+postas em um ambiente com formigas mortas
+é possível notar que conforme o tempo passa as formigas vivas agrupam as formigas mortas
+para liberar espaço para movimento.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=1\textwidth]{figuras/ant1.png}
+\caption{Agrupamento de formigas mortas}
+\label{fig:ant1}
+\cite{jafar2010ant}
+\end{figure}
+
+Utilizando esse comportamento, é possível aplicar a mesma lógica para gerar agrupamentos
+de determinados tipos de dados que estão dispostos em uma matriz de duas dimensões,
+como por exemplo mineração de dados \cite{abraham2003web}, 
+recuperação de dados, organização de documentos \cite{ramos2004self}, análise de
+rede \cite{networkants}, entre outros.
+
+Esse relatório estudará como esse algorítimo pode ser implementado e apresentará
+alguns resultados com base nos algorítimos construídos.
+
+% 2. Problemática
+%   Detalhamento do problema, PEAS e características do problema
+\section{Problemática}
+
+O algorítimo segue alguns princípios básicos: as formigas são modeladas por agente simples
+que se movem aleatoriamente em um ambiente fechado. Formigas mortas são espalhadas nesse
+ambiente também de forma aleatória. Tais formigas mortas podem ser pegas e carregadas
+por formigas vivas dado uma função de probabilidade para cada ação (pegar e soltar). Tal
+função é feita se baseando na densidade de formigas mortas em volta da formiga viva. Quanto
+menos formigas mortas ao redor da formiga viva, mais chances aquela formiga terá de pegar
+uma morta e carregar para alguma direção. Quanto mais formigas mortas estiverem no raio
+de observação da formiga viva, maior a chance dela deixar a formiga morta naquela posição.
+
+\subsection{PEAS}
+
+\begin{itemize}
+    \item \textbf{Medida de desempenho}
+        \begin{itemize}
+            \item Maximizar densidade de formigas em um local;
+            \item Maximização do agrupamento (Poucos grupos com muitas formigas).
+        \end{itemize}
+    \item \textbf{Ambiente}
+        \begin{itemize}
+            \item Formigas vivas e mortas;
+            \item Placa de Petri (tabuleiro).
+        \end{itemize}
+    \item \textbf{Sensores}
+        \begin{itemize}
+            \item Reconhecer a existência de uma formiga em suas proximidades;
+            \item Verificar se a formiga está morta.
+        \end{itemize}
+    \item \textbf{Atuadores}
+        \begin{itemize}
+            \item Mover;
+            \item Soltar formiga;
+            \item Carregar formiga.
+        \end{itemize}
+\end{itemize}
+
+\subsection {Propriedades do ambiente}
+
+\begin{itemize}
+    \item \textbf{Parcialmente observável}: cada formiga tem um campo
+        de visão limitado;
+    \item \textbf{Estocástico}: há um componente randômico, fazendo
+       com que cada execução gere um resultado diferente;
+   \item \textbf{Sequencial}: as decisões atuais afetam as decisões
+      futuras;
+  \item \textbf{Estático}\footnote{O trabalho não foi implementado com 
+        \textit{Threads}, caso contrário seria dinâmico}: uma formiga não pode afetar o ambiente
+     enquanto outra está atuando;
+ \item \textbf{Discreto}: Todos os elementos do ambiente são contáveis;
+ \item \textbf{Multiagente}: Há diversas formigas atuando sobre o mesmo ambiente.
+\end{itemize}
+
+% 3. Modelo implementado
+%   Estratégias utilizadas, fórmulas, definições de implementação, linguagem
+\section{Modelo implementado}
+
+O trabalho foi implementado utilizando a linguagem C++ e a biblioteca gráfica
+SFML (\textit{Simple and Fast Multimedia Library}).
+
+\begin{equation} \label{eq:carregar}
+P_{c} = \biggl(\dfrac{n_{vazios}}{n_{total}}\biggr)^2 \times 100
+\end{equation}
+
+\begin{flushleft}
+    onde:
+\end{flushleft}
+
+\begin{itemize} 
+    \item $P_{c}$ é a probabilidade da formiga carregar a formiga morta encontrada;
+    \item $n_{vazios}$ é o número de espaços observados sem formigas mortas;
+    \item $n_{total}$ é o número total de espaços observados pela formiga
+\end{itemize}
+
+\begin{equation} \label{eq:soltar}
+P_{s} = \biggl( \dfrac{n_{mortas}}{n_{total}} \biggr)^2 \times 100
+\end{equation}
+
+\begin{flushleft}
+    onde:
+\end{flushleft}
+
+\begin{itemize} 
+    \item $P_{s}$ é a probabilidade da formiga soltar a formiga morta sendo carregada;
+    \item $n_{mortas}$ é o número de espaços observados com formigas mortas;
+    \item $n_{total}$ é o número total de espaços observados pela formiga
+\end{itemize}
+
+% 4. Experimentos, resultados e análises
+%   Detalhamento de como os experimentos foram conduzidos (variações do raio, definições do número de itens e tamanho da matriz, quantidade de agentes, número de iterações)
+%   Mostrar e analisar os resultados (tabelas, figuras, gráficos).
+\section{Experimentos, resultados e análises}
+
+Blurgh
+
+% 5. Conclusão
+%   Considerações sobre o trabalho e sobre os resultados obtidos, trabalhos futuros.
+\section{Conclusão}
+
+Future-vision
 
 \bibliographystyle{sbc}
 \bibliography{sbc-template}
