@@ -69,7 +69,7 @@
 %   Contextualização do problema, justificativa, objetivos, estrutura do relatório.
 \section{Introdução}
 
-O agrupamento baseado em formigas é uma técnica de agrupamento bioinspirada baseado
+O agrupamento baseado em formigas (Ant-clustering) é uma técnica de agrupamento bioinspirada baseado
 na noção de inteligência de enxame \cite{abraham2006swarm} que é um paradigma
 de inteligência distribuída para resolver problemas de otimização 
 que surgiram com o estudo colônias, enxames ou organismos sociais. Agrupamento com
@@ -266,29 +266,84 @@ P_{s} =
 %   Mostrar e analisar os resultados (tabelas, figuras, gráficos).
 \section{Experimentos, resultados e análises}
 
-Blurgh
+Os experimentos foram realizados com os seguintes parâmetros:
+
+\begin{itemize}
+    \item Tabuleiro com tamanho $160 \times 160$;
+    \item 6000 formigas mortas;
+    \item 100 formigas vivas;
+    \item 4 milhões de iterações;
+    \item Raio de visão variando entre 1, 5 e 10.
+\end{itemize}
+
+\subsection{Experimento 1}
+
+O primeiro experimento realizado identificado pela Figura~\ref{fig:ant_random1}
+mostra o agrupamento das formigas com sementes para o algorítimo de geração de números
+aleatórios baseados no tempo em que está sendo executado o experimento. Com raio 1
+foram realizados 11 agrupamentos, com raio 5 foi observado 4 agrupamentos e com raio 10
+surgiram também 4 agrupamentos. 
 
 \begin{figure}[ht]
 \centering
-\includegraphics[width=.7\textwidth]{figuras/ants_seed1.png}
-\caption{Agrupamento de formigas com a mesma semente.}
-\label{fig:ant_seed1}
-\end{figure}
-
-\begin{figure}[ht]
-\centering
-\includegraphics[width=.7\textwidth]{figuras/ants_random1.png}
+\includegraphics[width=.51\textwidth]{figuras/ants_random1.png}
 \caption{Agrupamento de formigas com a sementes diferentes.}
 \label{fig:ant_random1}
 \end{figure}
 
+\pagebreak
 
+\subsection{Experimento 2}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=.51\textwidth]{figuras/ants_seed1.png}
+\caption{Agrupamento de formigas com a mesma semente.}
+\label{fig:ant_seed1}
+\end{figure}
+
+O segundo experimento identificado pela Figura~\ref{fig:ant_seed1} mostra o agrupamento 
+realizado pelas formigas com a mesma semente. Esse experimento foi realizado pois mostra
+como o raio afeta o agrupamento dado uma mesma configuração inicial. As formigas com
+raio 1 realizaram 9 agrupamentos, com raio 5 houve 5 agrupamentos e com raio 10 houve
+4 agrupamentos.
+
+É possível observar que quanto maior o raio menos grupos com mais formigas foram formadas,
+entretanto, mais formigas "soltas", isto é, fora de um grupo são observadas. Outro fator
+de desempenho observado é o tempo. O primeiro valor de cada quadrante das
+Figuras~\ref{fig:ant_random1}~e~\ref{fig:ant_seed1} é o tempo necessário para todas as iterações
+serem concluídas.
+
+\begin{tabular}{|p{4cm}||p{4cm}|p{4cm}|}
+ \hline
+ \multicolumn{3}{|c|}{Tempo (segundos) para calcular 4 milhões de iterações} \\
+ \hline
+         & Experimento 1 & Experimento 2 \\%& Experimento 3\\
+ \hline
+ Raio 1  & 74.038s       & 75.200s       \\%&              \\
+ Raio 5  & 377.851s      & 381.403s      \\%&              \\
+ Raio 10 & 1331.510s     & 1286.260s     \\%&              \\
+ \hline
+\end{tabular}
 
 % 5. Conclusão
 %   Considerações sobre o trabalho e sobre os resultados obtidos, trabalhos futuros.
 \section{Conclusão}
 
-Future-vision
+Os resultados demonstraram que o algorítimo estudado é realmente interessante para
+realizar problemas de agrupamento. Mesmo em um ambiente simples, com fórmulas
+probabilísticas descomplicadas e movimentos completamente aleatórios o resultado
+produzido se mostrou bastante eficaz.
+
+Há três grandes tópicos a serem explorados em trabalhos futuros:
+
+\begin{enumerate}
+    \item Paralelizar a ação das formigas;
+    \item Estabelecer uma melhor função de movimento;
+    \item Melhorar as fórmulas de probabilidade estabelecidas.
+\end{enumerate}
+
+Abordando esses 3 tópicos, é esperado que a eficácia do sistema seja ainda maior.
 
 \bibliographystyle{sbc}
 \bibliography{sbc-template}
