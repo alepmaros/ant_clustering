@@ -1,6 +1,9 @@
-obj/*.o
+assignment1/obj/*.o
+assignment2/obj/*.o
+*.o
 *.swp
-ants
+assignment1/ants1
+assignment2/ants2
 
 ## Core latex/pdflatex auxiliary files:
 *.aux

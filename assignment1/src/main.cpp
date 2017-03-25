@@ -53,7 +53,7 @@ float         elapsedTime   = 0.0;
  * GRID CONFIG *
  ***************/
 // Space available to put the ants (grid size)
-int         spaceAvailable = (int) 800.0 / 5.0;
+int         spaceAvailable = (int) 800.0 / antSize;
 
 // Varaible to hold text to draw on the screen
 char c[20];

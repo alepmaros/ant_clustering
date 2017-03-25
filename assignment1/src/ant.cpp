@@ -53,7 +53,7 @@ Ant::Ant(int antId,
     }
 
     // making the body
-    this->mBody.setSize(sf::Vector2f(5,5));
+    this->mBody.setSize(sf::Vector2f(antSize, antSize));
     this->mBody.setFillColor(this->mColor);
     this->mBody.setPosition(this->mPosition);
 }
