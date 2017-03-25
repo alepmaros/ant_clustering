@@ -1,4 +1,4 @@
-# Ant Clustering algorithm/visualisation
+# Ant Clustering Algorithm/visualisation
 
 This is a class project for my Artificial Intelligence course.
 
@@ -14,13 +14,15 @@ Most of the implementation is done using C++ and SFML
 
 # Assignments
 
-The algorithm got more complicated each round, adding more stuff for the ants to do
+The algorithm got more complicated each assignment, adding more stuff for the ants to do
 so I separated them into folders.
 
 # Assignment 1
 
-Here is the most basic Ant Clustering Algorithm. You can check the report (it is in
-Brazilian Portuguese but there are some valuable formulas there) in /assignment1/report/report.pdf
+Here is the most basic Ant Clustering Algorithm. You can check the report in /assignment1/report/report.pdf
+(it is in Brazilian Portuguese but there are some valuable formulas there).
+
+Here the ants have no weigth and all the probability is calculated through some basic formulas.
 
 Here is an example of the agroupation done by the ants:
 
