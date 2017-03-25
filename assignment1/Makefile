@@ -15,7 +15,7 @@ $(ODIR)/%.o: $(SDIR)/%.cpp $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS)
 
 all: $(OBJ)
-	$(CC) -o ants $(SDIR)/main.cpp $^ $(CFLAGS)
+	$(CC) -o ants1 $(SDIR)/main.cpp $^ $(CFLAGS)
 
 .PHONY: clean
 
