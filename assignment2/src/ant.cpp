@@ -100,11 +100,11 @@ void Ant::update()
 
             if (chanceOfCarryingAnt <= 0)
             {
-                chanceOfCarryingAnt = 20;
+                chanceOfCarryingAnt = 8;
             }
             else if (chanceOfCarryingAnt == 1000)
             {
-                chanceOfCarryingAnt = 980;
+                chanceOfCarryingAnt = 992;
             }
 
             //std::cout << "There is a x% chance of carrying this ant: " << chanceOfCarryingAnt << std::endl;
@@ -128,11 +128,11 @@ void Ant::update()
             
             if (chanceOfDroppingAnt <= 0)
             {
-                chanceOfDroppingAnt = 20;
+                chanceOfDroppingAnt = 8;
             }
             else if (chanceOfDroppingAnt >= 1000)
             {
-                chanceOfDroppingAnt = 980;
+                chanceOfDroppingAnt = 992;
             }
 
             //std::cout << "There is a x% chance of dropping tis ant: " << chanceOfDroppingAnt << std::endl;

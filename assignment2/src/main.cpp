@@ -170,18 +170,17 @@ int main()
         for (int i = 0; i < spaceAvailable; i++)
         {
             sf::RectangleShape line(sf::Vector2f(800, 1));
+            sf::RectangleShape line2(sf::Vector2f(800,1));
+
             line.setFillColor(sf::Color::Black);
             line.setPosition(sf::Vector2f(0, i * antSize));
-            window.draw(line);
-        }
 
-        for (int i = 0; i <= spaceAvailable; i++)
-        {
-            sf::RectangleShape line(sf::Vector2f(800, 1));
-            line.rotate(90);
-            line.setFillColor(sf::Color::Black);
-            line.setPosition(sf::Vector2f(i * antSize, 0));
+            line2.rotate(90);
+            line2.setFillColor(sf::Color::Black);
+            line2.setPosition(sf::Vector2f(i * antSize, 0));
+
             window.draw(line);
+            window.draw(line2);
         }
 
         // Draw Dead Ants
