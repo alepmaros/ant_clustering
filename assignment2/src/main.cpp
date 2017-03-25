@@ -23,7 +23,7 @@ std::vector<Ant> dead_ants;
  * ANTS CONFIGS  *
  *****************/
 // Numer of alive and dead ants
-int         nAliveAnts  = 10;
+int         nAliveAnts  = 20;
 // The number of dead ants depends on the file passed on execution
 int         nDeadAnts   = 0;
 // Radius that the ant can see

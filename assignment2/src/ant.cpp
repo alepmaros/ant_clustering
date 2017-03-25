@@ -53,7 +53,7 @@ Ant::Ant(int antId,
         else if (mAntType == 2)
             this->mColor = sf::Color::Green;
         else if (mAntType == 3)
-            this->mColor = sf::Color::Cyan;
+            this->mColor = sf::Color::Blue;
         else if (mAntType == 4)
             this->mColor = sf::Color::Magenta;
     }
@@ -72,7 +72,7 @@ void Ant::draw(sf::RenderWindow *window)
 {
     if (this->mCurrentStatus == Status::Carrying)
     {
-        this->mBody.setFillColor(sf::Color::Blue);
+        this->mBody.setFillColor(sf::Color::Cyan);
     }
     else if (!this->mIsDead)
     {
