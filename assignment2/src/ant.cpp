@@ -275,7 +275,7 @@ sf::Vector2f Ant::getDataPosition()
 
 float Ant::calculateSimilarity()
 {
-    float alpha = 40;
+    float alpha = 37;
     float similarity = 0;
     float distanceX, distanceY, distance;
     int posX, posY;
@@ -341,7 +341,7 @@ float Ant::calculateSimilarity()
 
 float Ant::getProbabilityPickup()
 {
-    float k1 = 0.00008;
+    float k1 = 0.00030;
     float similarity = this->calculateSimilarity();
     float pp = k1 / (k1 + similarity);
     //std::cout << similarity << " @ k1:" << k1 << std::endl;
@@ -351,7 +351,7 @@ float Ant::getProbabilityPickup()
 
 float Ant::getProbabilityDrop()
 {
-    float k2 = 0.00003;
+    float k2 = 0.00025;
     float similarity = this->calculateSimilarity();
     float pd = similarity / (k2 + similarity);
     //std::cout << similarity << " @ " << k2 << std::endl;
