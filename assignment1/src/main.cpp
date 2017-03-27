@@ -28,7 +28,7 @@ int         nDeadAnts   = 6000;
 // If radius == 1 the ant can see the 8 adjacents spaces
 // If radius == 2 the ant can see 8 + 16 spaces
 // etc...
-int         radius      = 3;
+int         radius      = 5;
 // Size of ants in pixels
 int         antSize     = 5;
 
@@ -126,6 +126,7 @@ int main()
         aliveAntGrid[posY][posX] = i;
     }
 
+    //std::srand(std::time(0));
     stopwatch.restart();
     while (window.isOpen())
     {

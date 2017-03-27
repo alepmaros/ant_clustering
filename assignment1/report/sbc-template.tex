@@ -38,7 +38,7 @@
 
 \sloppy
 
-\title{Ant Clustering}
+\title{IAR0001 - 2017/1\\Relatório Trabalho 1\\Ant Clustering}
 
 \author{Alexandre Maros\inst{1} }
 
@@ -69,7 +69,7 @@
 %   Contextualização do problema, justificativa, objetivos, estrutura do relatório.
 \section{Introdução}
 
-O agrupamento baseado em formigas (Ant-clustering) é uma técnica de agrupamento bioinspirada baseado
+O agrupamento baseado em formigas (\textit{Ant-clustering}) é uma técnica de agrupamento bioinspirada baseado
 na noção de inteligência de enxame \cite{abraham2006swarm} que é um paradigma
 de inteligência distribuída para resolver problemas de otimização 
 que surgiram com o estudo colônias, enxames ou organismos sociais. Agrupamento com
@@ -211,11 +211,12 @@ Da forma com que foi implementada, a ação das formigas são sequenciais, isto é, 
 age apenas após a outra completar seu movimento, sem que aja sobreposição de ações.
 Isso ocorre pois não há a utilização de processamento paralelo (\textit{threads}).
 As formigas podem se mover na diagonal, dessa forma existem 8 possíveis direções de 
-movimento.
+movimento. Não há nenhuma função especial de movimento, sendo que apenas um gerador
+aleatório decide a próxima direção, sem levar em consideração outros fatores.
 
 Outro ponto importante para notar é que não há bordas no tabuleiro, ou seja, uma formiga
 que está no extremo direito do tabuleiro, ao andar uma casa para a direita, chegará
-na posição extrema esquerda, como se o tabuleiro fosse na verdade um globo.
+na posição extrema esquerda, como se o tabuleiro fosse um globo.
 
 A fórmula para decidir se a formiga deve começar a carregar uma formiga morta é
 definida da seguinte forma:
@@ -276,41 +277,67 @@ Os experimentos foram realizados com os seguintes parâmetros:
     \item Raio de visão variando entre 1, 5 e 10.
 \end{itemize}
 
-\subsection{Experimento 1}
-
 O primeiro experimento realizado identificado pela Figura~\ref{fig:ant_random1}
 mostra o agrupamento das formigas com sementes para o algorítimo de geração de números
-aleatórios baseados no tempo em que está sendo executado o experimento. Com raio 1
+aleatórios baseados no tempo em que está sendo executado o experimento. A mesma semente
+foi utilizada para gerar o tabuleiro inicial, logo a disposição inicial das formigas
+são iguais para todas as variações de raio, porém os movimentos são diferentes de uma
+execução para outra. Com raio 1
 foram realizados 11 agrupamentos, com raio 5 foi observado 4 agrupamentos e com raio 10
-surgiram também 4 agrupamentos. 
+surgiram 3 agrupamentos. 
 
 \begin{figure}[ht]
 \centering
-\includegraphics[width=.51\textwidth]{figuras/ants_random1.png}
-\caption{Agrupamento de formigas com a sementes diferentes.}
+\includegraphics[width=.66\textwidth]{figuras/ants_random1.png}
+\caption{Experimento 1 -- Agrupamento de formigas com sementes diferentes.}
 \label{fig:ant_random1}
 \end{figure}
 
 \pagebreak
 
-\subsection{Experimento 2}
-
-\begin{figure}[ht]
+\begin{figure}[h!]
 \centering
-\includegraphics[width=.51\textwidth]{figuras/ants_seed1.png}
-\caption{Agrupamento de formigas com a mesma semente.}
+\includegraphics[width=.66\textwidth]{figuras/ants_seed1.png}
+\caption{Experimento 2 -- Agrupamento de formigas com a mesma semente.}
 \label{fig:ant_seed1}
 \end{figure}
 
 O segundo experimento identificado pela Figura~\ref{fig:ant_seed1} mostra o agrupamento 
 realizado pelas formigas com a mesma semente. Esse experimento foi realizado pois mostra
-como o raio afeta o agrupamento dado uma mesma configuração inicial. As formigas com
-raio 1 realizaram 9 agrupamentos, com raio 5 houve 5 agrupamentos e com raio 10 houve
-4 agrupamentos.
+como o raio afeta o agrupamento dado uma mesma configuração inicial e os mesmos movimentos.
+As formigas com raio 1 realizaram 9 agrupamentos, com raio 5 houve 5 agrupamentos
+e com raio 10 houve 4 agrupamentos.
 
 É possível observar que quanto maior o raio menos grupos com mais formigas foram formadas,
-entretanto, mais formigas "soltas", isto é, fora de um grupo são observadas. Outro fator
-de desempenho observado é o tempo. O primeiro valor de cada quadrante das
+entretanto, mais formigas "soltas", isto é, fora de um grupo são observadas. Isso é explicado
+pois quanto maior o raio, maiores são as chances de uma formiga viva pegar uma morta que
+está na borda do agrupamento. Outro fator que ocorre ao aumentar o raio é o aumento de
+buracos no meio dos agrupamentos. Com um raio de 10, a formiga viva que estará no meio
+do agrupamento ainda conseguirá observar fora do agrupamento e identificará que há
+espaços vazios em volta, aumentando a chance da formiga pegar a morta.
+
+Um ponto interessante é a velocidade com que os grupos são formados. A
+Figura~\ref{fig:militer} mostra o estado do sistema na iteração 100000 (cem mil). Quanto
+menor o raio, mais rápido fica evidente a formação dos grupos. Nessa iteração,
+quando as formigas estão utilizando Raio 1 já fica claro o agrupamento. Em contrapartida,
+quando utilizando Raio 10, os agrupamentos são tão esparsos que parece estar em um ambiente
+completamente aleatório.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=1\textwidth]{figuras/militer.png}
+\caption{O estado do sistema na iteração 100000 (cem mil) para os raios 1, 5 e 10.
+Quanto menor o raio, mais rápido grupos são formados.}
+\label{fig:militer}
+\end{figure}
+
+\pagebreak
+
+Quanto menor o raio, mais grupos são formados, porém eles são mais concisos, densos. Quanto
+maior o raio, menos grupos com mais formigas são formados, porém eles acabam ficando com
+diversos buracos no meio e com mais formigas espalhadas pelo tabuleiro.
+
+Outro fator de desempenho observado é o tempo. O primeiro valor de cada quadrante das
 Figuras~\ref{fig:ant_random1}~e~\ref{fig:ant_seed1} é o tempo necessário para todas as iterações
 serem concluídas.
 
@@ -320,9 +347,9 @@ serem concluídas.
  \hline
          & Experimento 1 & Experimento 2 \\%& Experimento 3\\
  \hline
- Raio 1  & 74.038s       & 75.200s       \\%&              \\
- Raio 5  & 377.851s      & 381.403s      \\%&              \\
- Raio 10 & 1331.510s     & 1286.260s     \\%&              \\
+ Raio 1  & 148.400s      & 75.200s       \\%&              \\
+ Raio 5  & 448.025s      & 381.403s      \\%&              \\
+ Raio 10 & 1332.937s     & 1286.260s     \\%&              \\
  \hline
 \end{tabular}
 
