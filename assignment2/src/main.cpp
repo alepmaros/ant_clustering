@@ -143,7 +143,7 @@ int main()
     while (window.isOpen())
     {
 
-        for (int i = 0; i < drawIterations; i++)
+        for (int i = 0; i < drawIterations && window.isOpen(); i++)
         {
             sf::Event event;
             while (window.pollEvent(event))
