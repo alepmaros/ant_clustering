@@ -23,14 +23,14 @@ std::vector<Ant> dead_ants;
  * ANTS CONFIGS  *
  *****************/
 // Numer of alive and dead ants
-int         nAliveAnts  = 20;
+int         nAliveAnts  = 10;
 // The number of dead ants depends on the file passed on execution
 int         nDeadAnts   = 0;
 // Radius that the ant can see
 // If radius == 1 the ant can see the 8 adjacents spaces
 // If radius == 2 the ant can see 8 + 16 spaces
 // etc...
-int         radius      = 5;
+int         radius      = 1;
 // Size of ants in pixels
 int         antSize     = 10;
 
@@ -46,7 +46,7 @@ int         drawIterations = 500;
 // nIterations == how many iterations it already did
 // maxIterations == the number max of iterations to do
 unsigned long nIterations   = 0;
-unsigned long maxIterations = 40000000;
+unsigned long maxIterations = 4000000;
 
 // Variable to hold how many time has passed since the simulation begun
 float         elapsedTime   = 0.0;
@@ -77,7 +77,7 @@ int main()
     // Since this is a simulation and not a game I will controll the speed using
     // the frame rate. This is not recomended, but for simplicity sake I will be
     // using this for now.
-    //window.setFramerateLimit(20);
+    //window.setFramerateLimit(5);
 
     // Vector to hold ants ID
     std::vector<std::vector<int> > aliveAntGrid;

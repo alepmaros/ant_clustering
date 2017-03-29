@@ -52,12 +52,14 @@ public:
     // Function used for alive ants move dead ants
     void                move(sf::Vector2f position);
 
+    // Funciton used for alive ant to move in the board
+    void                move();
+
 private:
-    // Function to count dead ants around the ant
-    int                 countDeadAnts();
     int                 getAntId();
     sf::Vector2f        getDataPosition();
-    Direction           decideDirection();
+    sf::Vector2i        decideDirection();
+    void                chooseOtherDestination();
 
     float               calculateSimilarity();
     float               getProbabilityPickup();
@@ -85,6 +87,8 @@ public:
     // This is used to calculate how similar an ant is to another
     sf::Vector2f        mDataPosition;
     int                 mAntType;
+
+    sf::Vector2i        mDestination;
 };
 
 

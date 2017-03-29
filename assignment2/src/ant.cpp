@@ -36,6 +36,7 @@ Ant::Ant(int antId,
     this->mGridSize = gridSize;
     this->mDataPosition = dataPosition;
     this->mAntType = antType;
+    this->mDestination = sf::Vector2i(std::rand() % gridSize, std::rand() % gridSize);
 
     // This is how many cells the ant will see with radius x
     // Which is the sum from 1 to radius of 8 times i
@@ -146,43 +147,12 @@ void Ant::update()
 
     // Perform Movement
 
-    Direction whereToMove = static_cast<Direction>(std::rand() % 8);
+    //Direction whereToMove = static_cast<Direction>(std::rand() % 8);
+    sf::Vector2i whereToMove = decideDirection();
 
-    int nextPosY = mGridPosition.y;
-    int nextPosX = mGridPosition.x;
-    switch(whereToMove)
-    {
-        case Direction::North:
-            nextPosY--;
-            break;
-        case Direction::South:
-            nextPosY++;
-            break;
-        case Direction::East:
-            nextPosX++;
-            break;
-        case Direction::West:
-            nextPosX--;
-            break;
-        case Direction::NorthEast:
-            nextPosY--;
-            nextPosX++;
-            break;
-        case Direction::SouthEast:
-            nextPosY++;
-            nextPosX++;
-            break;
-        case Direction::SouthWest:
-            nextPosY++;
-            nextPosX--;
-            break;
-        case Direction::NorthWest:
-            nextPosY--;
-            nextPosX--;
-            break;
-    }
-
-
+    int nextPosY = mGridPosition.y + whereToMove.y;
+    int nextPosX = mGridPosition.x + whereToMove.x;
+    
     // This is to remove border limitations for the ants. They will loop back now.
     if (nextPosY < 0)
         nextPosY = mGridSize + nextPosY;
@@ -194,17 +164,19 @@ void Ant::update()
         nextPosX = nextPosX - mGridSize;
 
 
-    // If there is an Alive ant in the next position, do nothing.
+    // If there is an Alive ant in the next position, choose another destination to move
     if (mAliveAntGrid[nextPosY][nextPosX] != -1)
     {
+        chooseOtherDestination();
         return;
     }
     if (this->mCurrentStatus == Status::Carrying)
     {
         // If I am carrying a dead ant and there is a dead ant in the next space
-        // do nothing.
+        // choose other destination to move
         if (mDeadAntGrid[nextPosY][nextPosX] != -1)
         {
+            chooseOtherDestination();
             return;
         }
     }
@@ -226,41 +198,50 @@ void Ant::update()
     this->move(sf::Vector2f(nextPosX,nextPosY));
 }
 
+sf::Vector2i Ant::decideDirection()
+{
+    // If I am at my destination - chose another one
+    if ( mGridPosition == mDestination )
+    {
+        chooseOtherDestination();
+    }
+
+    int y = mDestination.y - mGridPosition.y;
+    int x = mDestination.x - mGridPosition.x;
+    int gridBy2 = mGridSize / 2;
+
+    // if the distance the distance is greater then the grid divided by 2 its easier to loop around
+    if ( y > 0 )
+        y = 1;
+    else if ( y < 0)
+        y = -1;
+
+    if ( std::abs(mDestination.y - mGridPosition.y) > gridBy2 )
+        y = -y;
+
+    if (x > 0)
+        x = 1;
+    else if ( x < 0 )
+        x = -1;
+
+    if ( std::abs(mDestination.x - mGridPosition.x) > gridBy2 )
+        x = -x;
+
+    return sf::Vector2i(x,y);
+}
+
+void Ant::chooseOtherDestination()
+{
+    do {
+        mDestination = sf::Vector2i(std::rand() % mGridSize, std::rand() % mGridSize);
+    } while(mDestination == mGridPosition);
+}
+
 void Ant::move(sf::Vector2f nextPos)
 {
     mGridPosition.x = (int) nextPos.x;
     mGridPosition.y = (int) nextPos.y;
     mBody.setPosition(sf::Vector2f(nextPos.x * mAntSize, nextPos.y * mAntSize));
-}
-
-int Ant::countDeadAnts()
-{
-    int deadAntCount = 0;
-    int posX, posY;
-    for (int i = -mRadius; i <= mRadius; i++)
-    {
-        for (int j = -mRadius; j <= mRadius; j++) 
-        {
-            posY = mGridPosition.y + i;
-            posX = mGridPosition.x + j;
-
-            // This is to remove border limitations for the ants. They will loop back now.
-            if (posY < 0)
-                posY = mGridSize + posY;
-            if (posY >= mGridSize)
-                posY = posY - mGridSize;
-            if (posX < 0)
-                posX = mGridSize + posX;
-            if (posX >= mGridSize)
-                posX = posX - mGridSize;
-
-            if (mDeadAntGrid[posY][posX] != -1)
-            {
-                deadAntCount++;
-            }
-        }
-    }
-    return deadAntCount;
 }
 
 int Ant::getAntId()
@@ -275,7 +256,7 @@ sf::Vector2f Ant::getDataPosition()
 
 float Ant::calculateSimilarity()
 {
-    float alpha = 37;
+    float alpha = 8;
     float similarity = 0;
     float distanceX, distanceY, distance;
     int posX, posY;
@@ -325,15 +306,15 @@ float Ant::calculateSimilarity()
                     //std::cout << distance << std::endl;
 
                 //if (distance > 0)
-                    similarity += distance;
-                //std::cout << distance << std::endl;
+                similarity += distance;
+                    //std::cout << distance << std::endl;
                 //std::cout << distanceX << " @ " << distanceY << " @ " << similarity << std::endl;
             }
         }
     }
     //if (similarity >= 0)
         //std::cout << similarity << std::endl;
-    similarity = (1.0 / mCellsSeenSquared) * similarity;
+    similarity = (1.0 / std::pow(mCellsSeen - deadAntCount, 2)) * similarity;
     
     // if similarity < 0 return 0 else return similarity
     return similarity < 0 ? 0 : similarity;
@@ -341,20 +322,18 @@ float Ant::calculateSimilarity()
 
 float Ant::getProbabilityPickup()
 {
-    float k1 = 0.00030;
+    float k1 = 0.01400;
     float similarity = this->calculateSimilarity();
     float pp = k1 / (k1 + similarity);
-    //std::cout << similarity << " @ k1:" << k1 << std::endl;
+    //std::cout << similarity << " @ pp:" << pp * pp << " @ k1: " << k1 << std::endl;
     return pp * pp;
-
 }
 
 float Ant::getProbabilityDrop()
 {
-    float k2 = 0.00025;
+    float k2 = 0.061505;
     float similarity = this->calculateSimilarity();
     float pd = similarity / (k2 + similarity);
     //std::cout << similarity << " @ " << k2 << std::endl;
     return pd * pd;
-
 }
