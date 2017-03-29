@@ -51,6 +51,8 @@ unsigned long maxIterations = 4000000;
 // Variable to hold how many time has passed since the simulation begun
 float         elapsedTime   = 0.0;
 
+bool          breakPoint    = true;
+
 /***************
  * GRID CONFIG *
  ***************/
@@ -143,27 +145,46 @@ int main()
     while (window.isOpen())
     {
 
-        for (int i = 0; i < drawIterations && window.isOpen(); i++)
+        if ( ! breakPoint )
         {
-            sf::Event event;
-            while (window.pollEvent(event))
+            for (int i = 0; i < drawIterations && window.isOpen(); i++)
             {
-                if (event.type == sf::Event::Closed)
-                    window.close();
-            }
-
-            // Update Alive Ants
-            if (nIterations < maxIterations)
-            {
-                for(std::vector<Ant>::iterator it = alive_ants.begin();
-                        it != alive_ants.end(); it++) 
+                sf::Event event;
+                while (window.pollEvent(event))
                 {
-                    it->update();
+                    if (event.type == sf::Event::Closed)
+                        window.close();
+
+                    if (event.type == sf::Event::KeyPressed 
+                            && event.key.code == sf::Keyboard::Space )
+                    {
+                        breakPoint = !breakPoint;
+                    }
                 }
-                nIterations++;
+
+                // Update Alive Ants
+                if (nIterations < maxIterations)
+                {
+                    for(std::vector<Ant>::iterator it = alive_ants.begin();
+                            it != alive_ants.end(); it++) 
+                    {
+                        it->update();
+                    }
+                    nIterations++;
+                }
             }
         }
-        
+
+        sf::Event event;
+        while (window.pollEvent(event))
+        {
+            if (event.type == sf::Event::KeyPressed 
+                    && event.key.code == sf::Keyboard::Space )
+            {
+                breakPoint = !breakPoint;
+            }
+        }
+                
         window.clear(sf::Color::White);
 
         // Draw Grid Lines
@@ -208,7 +229,8 @@ int main()
         // How many time has passed since the simulation has begun
         if ( nIterations < maxIterations)
         {
-            elapsedTime = stopwatch.getElapsedTime().asSeconds();
+            if (!breakPoint)
+                elapsedTime += stopwatch.restart().asSeconds();
         }
 
         // Draw the FPS
