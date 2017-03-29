@@ -211,15 +211,19 @@ int main()
             it->draw(&window);
         }
 
-        // Draw Alive Ants
-        if (nIterations < maxIterations)
+        if ( !breakPoint)
         {
-            for(std::vector<Ant>::iterator it = alive_ants.begin();
-                    it != alive_ants.end(); it++) 
+            // Draw Alive Ants
+            if (nIterations < maxIterations)
             {
-                it->draw(&window);
+                for(std::vector<Ant>::iterator it = alive_ants.begin();
+                        it != alive_ants.end(); it++) 
+                {
+                    it->draw(&window);
+                }
             }
         }
+        
 
         // Frames per second calculation
         float currentTime = clock.restart().asSeconds();
