@@ -42,7 +42,8 @@ public:
                                 int antSize,
                                 int mGridSize,
                                 sf::Vector2f dataPosition,
-                                int antType);
+                                int antType,
+                                sf::Font &font);
 
     void                draw(sf::RenderWindow* window);
 
@@ -65,7 +66,9 @@ private:
     float               getProbabilityPickup();
     float               getProbabilityDrop(); 
 
-public:
+    int                 getAntType();
+
+private:
     int                 mAntId;
     sf::Vector2f        mPosition;
     sf::Vector2i        mGridPosition;
@@ -89,6 +92,7 @@ public:
     int                 mAntType;
 
     sf::Vector2i        mDestination;
+    sf::Font            &font;
 };
 
 

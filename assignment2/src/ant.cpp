@@ -20,11 +20,13 @@ Ant::Ant(int antId,
         int antSize,
         int gridSize,
         sf::Vector2f dataPosition,
-        int antType)
+        int antType,
+        sf::Font &font)
     : mAliveAntGrid(aliveAntGrid)
       , mDeadAntGrid(deadAntGrid)
       , mDeadAnts(deadAnts)
       , mAliveAnts(aliveAnts)
+      , font(font)
 {
     this->mAntId = antId;
     this->mIsDead = isDead;
@@ -57,6 +59,29 @@ Ant::Ant(int antId,
             this->mColor = sf::Color::Blue;
         else if (mAntType == 4)
             this->mColor = sf::Color::Magenta;
+        else if (mAntType == 5)
+            this->mColor = sf::Color(255,128,0);
+        else if (mAntType == 6)
+            this->mColor = sf::Color(128, 255, 0);
+        else if (mAntType == 7)
+            this->mColor = sf::Color(255,128,0);
+        else if (mAntType == 8)
+            this->mColor = sf::Color(255, 255, 0);
+        else if (mAntType == 9)
+            this->mColor = sf::Color(128, 255, 0);
+        else if (mAntType == 10)
+            this->mColor = sf::Color(127, 255, 0);
+        else if (mAntType == 11)
+            this->mColor = sf::Color(255,0,127);
+        else if (mAntType == 12)
+            this->mColor = sf::Color(128, 128, 128);
+        else if (mAntType == 13)
+            this->mColor = sf::Color(0, 153, 153);
+        else if (mAntType == 14)
+            this->mColor = sf::Color(0, 153, 0);
+        else
+            this->mColor = sf::Color(153, 76, 0);
+
     }
     else
     {
@@ -71,6 +96,12 @@ Ant::Ant(int antId,
 
 void Ant::draw(sf::RenderWindow *window)
 {
+    sf::Text numero(std::to_string(mAntType), font);
+
+    numero.setCharacterSize(mAntSize);
+    numero.setPosition(mGridPosition.x * mAntSize, mGridPosition.y * mAntSize);
+    numero.setFillColor(sf::Color::Black);
+
     if (this->mCurrentStatus == Status::Carrying)
     {
         this->mBody.setFillColor(sf::Color::Cyan);
@@ -80,6 +111,7 @@ void Ant::draw(sf::RenderWindow *window)
         this->mBody.setFillColor(sf::Color::Black);
     }
     window->draw(this->mBody); 
+    window->draw(numero);
 
 }
 
@@ -292,28 +324,21 @@ float Ant::calculateSimilarity()
                 posX = posX - mGridSize;
             }
 
-            //std::cout << posY << "-" << posX << std::endl;
             if (mDeadAntGrid[posY][posX] != -1)
             {
-                deadAntCount++;
                 sf::Vector2f deadAntDataPos_j = mDeadAnts[mDeadAntGrid[posY][posX]].getDataPosition();
                 distanceX = deadAntDataPos_j.x - deadAntDataPosition.x;
                 distanceY = deadAntDataPos_j.y - deadAntDataPosition.y;
                 distance = std::sqrt( (distanceX * distanceX) + (distanceY * distanceY));
                 distance = 1 - (distance/alpha);
                 //if (mDeadAnts[mDeadAntGrid[mGridPosition.y][mGridPosition.x]].mAntType ==
-                       //mDeadAnts[mDeadAntGrid[posY][posX]].mAntType)
-                    //std::cout << distance << std::endl;
+                       //mDeadAnts[mDeadAntGrid[posY][posX]].getAntType())
+                deadAntCount++;
 
-                //if (distance > 0)
                 similarity += distance;
-                    //std::cout << distance << std::endl;
-                //std::cout << distanceX << " @ " << distanceY << " @ " << similarity << std::endl;
             }
         }
     }
-    //if (similarity >= 0)
-        //std::cout << similarity << std::endl;
     similarity = (1.0 / std::pow(mCellsSeen - deadAntCount, 2)) * similarity;
     
     // if similarity < 0 return 0 else return similarity
@@ -322,7 +347,7 @@ float Ant::calculateSimilarity()
 
 float Ant::getProbabilityPickup()
 {
-    float k1 = 0.01400;
+    float k1 = 0.014;
     float similarity = this->calculateSimilarity();
     float pp = k1 / (k1 + similarity);
     //std::cout << similarity << " @ pp:" << pp * pp << " @ k1: " << k1 << std::endl;
@@ -331,9 +356,14 @@ float Ant::getProbabilityPickup()
 
 float Ant::getProbabilityDrop()
 {
-    float k2 = 0.061505;
+    float k2 = 0.0615;
     float similarity = this->calculateSimilarity();
     float pd = similarity / (k2 + similarity);
     //std::cout << similarity << " @ " << k2 << std::endl;
     return pd * pd;
+}
+
+int Ant::getAntType()
+{
+    return mAntType;
 }

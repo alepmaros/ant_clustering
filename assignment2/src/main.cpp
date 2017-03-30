@@ -23,7 +23,7 @@ std::vector<Ant> dead_ants;
  * ANTS CONFIGS  *
  *****************/
 // Numer of alive and dead ants
-int         nAliveAnts  = 10;
+int         nAliveAnts  = 15;
 // The number of dead ants depends on the file passed on execution
 int         nDeadAnts   = 0;
 // Radius that the ant can see
@@ -46,7 +46,7 @@ int         drawIterations = 500;
 // nIterations == how many iterations it already did
 // maxIterations == the number max of iterations to do
 unsigned long nIterations   = 0;
-unsigned long maxIterations = 4000000;
+unsigned long maxIterations = 2000000;
 
 // Variable to hold how many time has passed since the simulation begun
 float         elapsedTime   = 0.0;
@@ -99,6 +99,7 @@ int main()
     // Spawning the dead ants
     dead_ants.clear();
     std::ifstream infile("data1.txt");
+    //std::ifstream infile("r15.txt");
     if (!infile.is_open())
     {
         std::cout << "Error opening file." << std::endl;
@@ -119,7 +120,7 @@ int main()
         //std::cout << posX << "-" << posY << "-" << dead_ants.size() << std::endl;
         Ant a(nDeadAnts, true, sf::Vector2i(posX, posY), radius, deadAntGrid, aliveAntGrid,
                 dead_ants, alive_ants, antSize, spaceAvailable, sf::Vector2f(dataPosX, dataPosY),
-                antType);
+                antType, font);
         dead_ants.push_back(a);
         deadAntGrid[posY][posX] = nDeadAnts++;
 
@@ -136,7 +137,7 @@ int main()
         } while(aliveAntGrid[posY][posX] != -1);
 
         Ant a(i, false, sf::Vector2i(posX, posY), radius, deadAntGrid, aliveAntGrid,
-               dead_ants, alive_ants, antSize, spaceAvailable, sf::Vector2f(0,0), 0);
+               dead_ants, alive_ants, antSize, spaceAvailable, sf::Vector2f(0,0), 0, font);
         alive_ants.push_back(a);
         aliveAntGrid[posY][posX] = i;
     }
@@ -174,6 +175,10 @@ int main()
                 }
             }
         }
+
+        // Useful when testing and making the report to show middle execution
+        //if (nIterations == maxIterations / 8 || nIterations == maxIterations / 2)
+            //breakPoint = true;
 
         sf::Event event;
         while (window.pollEvent(event))
