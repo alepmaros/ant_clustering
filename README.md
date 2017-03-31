@@ -34,3 +34,11 @@ Variables: 6000 dead ants, 100 alive ants, 4 milion iterations, 160x160 grid
 (b): Radius 1
 (c): Radius 5
 (d): Radius 10
+
+# Assignment 2
+
+Follows the same principles of the Assignment 1, but here we are not agrouping
+homogeneous data. Now the "dead ants" are actually data with properties, and we need
+to calculate how similar those data are in order to agroup them.
+
+![assignment2](/assignment2/report/figuras/teste1.png)

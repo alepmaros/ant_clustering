@@ -3,7 +3,9 @@
 This is the second Assignment2.
 
 Now Ants have weights and belong to different groups, therefore they need to be
-agrouped in their groups.
+agrouped in their groups given a similarity function.
+
+![Algo](/assignment2/report/figuras/teste1.png)
 
 # The Idea
 
@@ -13,4 +15,6 @@ can be used in real life to organise documents, for example.
 
 # Implementation
 
-The implementation is done using C++ and SFML
+The implementation is done using C++ and SFML.
+
+Similarity Equations used are in the Report.
