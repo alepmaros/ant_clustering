@@ -38,7 +38,7 @@ int         antSize     = 10;
  * SCREEN CONFIG  *
  ******************/
 // Screen size in the x and y positions
-int         screenSize  = 630;
+int         screenSize  = 770;
 
 // How many iterations should it calculated before drawing to the screen.
 int         drawIterations = 2000;
@@ -57,7 +57,7 @@ bool          breakPoint    = true;
  * GRID CONFIG *
  ***************/
 // Space available to put the ants (grid size)
-int         spaceAvailable = (int) 800.0 / antSize;
+int         spaceAvailable = (int) screenSize / antSize;
 
 // Varaible to hold text to draw on the screen
 char c[20];
@@ -74,7 +74,7 @@ int main()
     font.loadFromFile("fonts/Roboto-Black.ttf");
 
     // Window setup
-    sf::RenderWindow window(sf::VideoMode(800, 800), "Ants");
+    sf::RenderWindow window(sf::VideoMode(screenSize, screenSize), "Ants");
 
     // Since this is a simulation and not a game I will controll the speed using
     // the frame rate. This is not recomended, but for simplicity sake I will be
