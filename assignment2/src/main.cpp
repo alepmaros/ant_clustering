@@ -177,7 +177,7 @@ int main()
         }
 
         // Useful when testing and making the report to show middle execution
-        //if (nIterations == maxIterations / 8 || nIterations == maxIterations / 2)
+        //if (nIterations == 50000 || nIterations == 200000)
             //breakPoint = true;
 
         sf::Event event;
@@ -236,10 +236,11 @@ int main()
         lastTime = currentTime;
 
         // How many time has passed since the simulation has begun
+        float aditionalTime = stopwatch.restart().asSeconds();
         if ( nIterations < maxIterations)
         {
             if (!breakPoint)
-                elapsedTime += stopwatch.restart().asSeconds();
+                elapsedTime += aditionalTime;
         }
 
         // Draw the FPS
