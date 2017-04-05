@@ -244,7 +244,7 @@ int main()
         }
 
         // Draw the FPS
-        sprintf(c, "Time: %f", elapsedTime);
+        sprintf(c, "Time: %fs", elapsedTime);
         std::string string(c);
         sf::String str(string);
         sf::Text text(str, font);
@@ -253,7 +253,7 @@ int main()
         window.draw(text);
 
         // Draw how many iterations already happened
-        sprintf(c, "Iteration: %lus", nIterations);
+        sprintf(c, "Iteration: %lu", nIterations);
         std::string string2(c);
         sf::String str2(string2);
         sf::Text text2(str2, font);
