@@ -11,6 +11,7 @@
 \usepackage[T1]{fontenc}
 \usepackage{amsmath}
 \usepackage{listings}
+\usepackage{float}
 
 \lstset{
   %frame=top,frame=bottom,
@@ -111,15 +112,11 @@ abaixo encontra-se um exemplo simplificado da entrada.
 \begin{lstlisting}[label={lst:list1}]
     -21.75161566 -20.00828819 1
     -20.23733722 -19.36787841 1
-    -19.27330407 -20.40163124 1
     +21.51552028 +17.66002862 2
-    +19.77730648 +21.49099295 2
     +20.30472224 +19.60669745 2
     -19.81298536 +19.76620021 3
-    -19.99989394 +18.24399226 3
     -15.37010376 +19.17040501 3
     +19.23332939 -20.21870089 4
-    +23.23704048 -20.77623319 4
     +19.27999504 -16.97360944 4
 \end{lstlisting}
 \end{tabular}
@@ -169,7 +166,7 @@ formiga $i$ é a seguinte:
 \begin{equation} \label{eq:simi}
     f(i) = 
     \begin{cases}
-        \dfrac{1}{s^2} \sum_{j}{(1 - \dfrac{d(i,j)}{\alpha})} & \text{, se } f(i) > 0 \\
+        \dfrac{1}{s^2} \sum_{j}{(1 - \dfrac{d(i,j)}{\alpha})} & \text{, se } f(i) > 0 \land \forall_j (1 - \dfrac{d(i,j)}{\alpha}) > 0\\
         0 & \text{, caso contrário}
     \end{cases}
 \end{equation}
@@ -220,11 +217,21 @@ definidas da seguinte forma:
     \item $k_1$ e $k_2$ são fatores de correção e são definidos empiricamente
 \end{itemize}
 
+Caso $P_c(x_i)$ ou $P_s(x_i)$ seja $0\%$ o valor será $0.05\%$. Se $P_c(x_i)$ ou $P_s(x_i)$
+forem $100\%$ o valor será $99.95\%$. Isso é utilizado para simular comportamentos que não
+sempre explicados ou para não deixar a escolha completamente determinística quando esses valores
+absolutos acabam sendo gerados.
+
 Um número fixo de iterações são calculadas a cada execução. Quando o número de iterações
-máximas é atingida, todas as formigas vivas, caso estejam carregando algo, deixam o
-dado na posição em que se encontram. O trabalho continua
+máximas é atingida, todas as formigas vivas, caso estejam carregando algo, continuam sua
+movimentação até largar o dado. O trabalho continua
 implementado de maneira serial, isto é, cada formiga executa sua
 movimentação de forma sequencial.
+
+Para o calculo do tamanho do tabuleiro foi utilizado o método proposto por \cite{handl2003ant},
+onde se tenta atingir uma proporção $\dfrac{1}{10}$ na fórmula $\dfrac{N_{itens}}{N_{celulas}}$, onde
+$N_{itens}$ é o número de dados dispostos no tabuleiro e $N_{celulas}$ é o número total
+de posições do tabuleiro.
 
 % 4. Experimentos, resultados e análises
 %   Detalhamento de como os experimentos foram conduzidos (variações do raio, definições do número de itens e tamanho da matriz, quantidade de agentes, número de iterações)
@@ -232,100 +239,120 @@ movimentação de forma sequencial.
 \section{Experimentos, resultados e análises}
 
 Foram disponibilizados duas entradas. A primeira contendo 4 grupos com 400 formigas e
-o segundo contendo 15 grupos com 600 formigas. O tabuleiro para ambas as entradas foram
-de 80 $\times$ 80, 15 formigas vivas foram utilizadas e 2 milhões de iterações foram calculadas.
+o segundo contendo 15 grupos com 600 formigas. As variáveis que não foram modificadas
+dependendo da entrada são as seguintes:
 
-\subsection{Entrada 1}
+\begin{itemize}
+    \item número de formigas vivas = 50
+    \item raio de visão = 1
+    \item $k1 = 0.02$
+    \item $k2 = 0.03$
+\end{itemize}
+
+\subsection{Entrada 1 - 400 dados e 4 grupos}
 
 Aqui, 400 dados pertencentes a 4 grupos, sendo que cada grupo contém 100 dados, foram dispostos
 aleatoriamente no tabuleiro. Os dados foram gerados a partir de uma distribuição normal.
 As Figuras~\ref{fig:teste1},~\ref{fig:teste2}~e~\ref{fig:teste3} mostram como foi feita
-as disposições dos dados inicial e final dado a entrada 1.
-
+as disposições dos dados inicial e final dado a entrada 1. É importante notar que aqui,
+os grupos possuem valores bem distintos um do outro, sendo possível assim um melhor agrupamento.
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=.6\textwidth]{figuras/teste1}
+    \includegraphics[width=.8\textwidth]{figuras/11}
     \caption{Entrada 1 -- Execução 1}
     \label{fig:teste1}
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[H]
     \centering
-    \includegraphics[width=.6\textwidth]{figuras/teste2}
+    \includegraphics[width=.8\textwidth]{figuras/12}
     \caption{Entrada 1 -- Execução 2}
     \label{fig:teste2}
 \end{figure}
 
 
-\begin{figure}[h]
+\begin{figure}[H]
     \centering
-    \includegraphics[width=.7\textwidth]{figuras/teste3}
+    \includegraphics[width=.7\textwidth]{figuras/13}
     \caption{Entrada 1 -- Execução 3 com o estado do sistema em 4 momentos distintos}
     \label{fig:teste3}
 \end{figure}
 
-Para essa entrada as variáveis utilizadas nas formas foram as seguintes:
+Para essa entrada o valor do $\alpha$ foi de 10 e as dimensões do tabuleiro foi de
+63 $\times$ 63.
 
-\begin{itemize}
-    \item raio de visão = 1
-    \item $\alpha = 8$
-    \item $k1 = 0.014$
-    \item $k2 = 0.615$
-\end{itemize}
+Nas três execuções é possível notar que o agrupamento foi eficiente. Formaram-se quatro
+grupos bem definidos e com poucos buracos. Na Figura~\ref{fig:teste1}, quatro dados ficaram
+fora de algum grupo, na Figura~\ref{fig:teste2}, três dados ficaram fora de grupos e na Figura~\ref{fig:teste3}
+apenas um dado ficou desconexo. 
 
-Tais variáveis foram definidas empiricamente, através de diversos testes de execução.
-Na Figura~\ref{fig:teste1}~e~\ref{fig:teste3} os 4 tipos de dados foram agrupados
-eficientemente e poucos
-dados ficaram fora dos agrupamentos. Esses dados que ficaram fora dos dados são de formigas
-que ainda estavam carregando os dados. Se, ao final da execução as formigas fossem permitidas
-de executar suas ações até deixar o dado no lugar mais adequado, esse problema possivelmente 
-seria remediado.
-
-Já na Figura~\ref{fig:teste2} nota-se que há dois grupos verdes desconexos, logo nota-se
-que o agrupamento não é sempre ideal com 2 milhões de iterações. Um ajuste de parâmetros
-ou um aumento das iterações máximas é necessário para garantir que o agrupamento seja
-sempre eficiente.
-
-A Figura~\ref{fig:teste3} também mostra o estado do sistema em quatro momentos distintos, o inicial
-e o final como nas outras duas figuras e também estados intermediários, após 250 mil iterações e
-após 1 milhão de iterações. Pequenos grupos são formados rapidamente, porém há uma certa demora
-até que esses pequenos grupos se unam.
+É possível notar na Figura~\ref{fig:teste3} que a formação de grupos é rápida. Em menos
+de 1 segundo (50 mil iterações) já é possível notar claramente os grupos sendo formados. Na
+iteração 200 mil os grupos já estão bem definidos e apenas alguns dados estão espalhados.
 
 \subsection{Entrada 2}
 
-Nessa entrada há 600 dados pertencentes a 15 grupos distintos, sendo que cada grupo
-contém 40 dados. Aqui, os grupos são mais parecidos entre si  e possuem uma diferença
-pequena entre cada um deles. As variáveis utilizadas foram as seguintes:
-
-\begin{itemize}
-    \item raio de visão = 2
-    \item $\alpha = 1.6$
-    \item $k1 = 0.001$
-    \item $k2 = 0.002$
-\end{itemize}
-
-\begin{figure}[h!]
+\begin{figure}[h]
     \centering
-    \includegraphics[width=1\textwidth]{figuras/teste4}
+    \includegraphics[width=.8\textwidth]{figuras/21}
     \caption{Entrada 2 -- Execução 1}
     \label{fig:teste4}
 \end{figure}
 
-\begin{figure}[h!]
+\begin{figure}[h]
     \centering
-    \includegraphics[width=1\textwidth]{figuras/teste5}
+    \includegraphics[width=.8\textwidth]{figuras/22}
     \caption{Entrada 2 -- Execução 2}
     \label{fig:teste5}
 \end{figure}
 
-Essa entrada provou ser difícil de encontrar um meio termo das variáveis devido a proximidade dos
-valores dos dados. O melhor agrupamento encontrado foi o das 
-Figuras~\ref{fig:teste4}~e~\ref{fig:teste5}, porém ainda não é um agrupamento ideal
-pois os dados ainda estão um pouco dispersos.
+Nessa entrada há 600 dados pertencentes a 15 grupos distintos, sendo que cada grupo
+contém 40 dados. Aqui, os grupos são mais parecidos entre si, possuindo  uma diferença
+pequena nos valores dos dados entre cada um deles. O valor do $\alpha$ utilizado foi de 1.6
+e a dimensão do tabuleiro foi de 77 $\times$ 77.
 
-Com raio 1 era identificado a junção de grupos similares (1 com 2, 2 com 3, etc).
-Possivelmente um ajuste mais fino é necessário para gerar um melhor agrupamento.
+Essa entrada provou ser mais complicada de se agrupar corretamente devido a
+similaridade entre os grupos. É possível notar que alguns dados são postos em outros
+grupos similares. Isso é ilustrado na Figura~\ref{fig:testezoom}.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=.65\textwidth]{figuras/21zoom}
+    \caption{Ampliação de uma área da Execução 1 - Entrada 2, onde é possível notar
+    que alguns dados foram erroneamente agrupados devido a sua similaridade.}
+    \label{fig:testezoom}
+\end{figure}
+
+\pagebreak
+
+Alguns dados ficaram em grupos errados e muitos ficaram fora de grupos. Isso sugere que há
+a necessidade de fazer uma análise mais específica para essa entrada, ajustando os valores de
+$\alpha$, $k_1$ e $k_2$ de uma maneira mais precisa. Outro caso a se testar é o aumento do 
+número de iterações executadas.
+
+Os tempos de execução foram os seguintes:
+
+\begin{table}[H]
+    \centering
+\begin{tabular}{|p{4cm}||p{4cm}|p{4cm}|}
+ \hline
+ \multicolumn{3}{|c|}{Tempo (segundos)} \\
+ \hline
+             & Entrada 1   & Entrada 2\\%& Experimento 3\\
+ \hline
+ Execução 1  & 9.699s      & 15.758s       \\%&              \\
+ Execução 2  & 9.792s      & 15.382s      \\%&              \\
+ Execução 3  & 9.725s      & --     \\%&              \\
+ \hline
+\end{tabular}
+\caption{Tempos de execução de 1 milhão de iterações com base nas entradas}
+\label{tab:tempo}
+\end{table}
+
+Os tempos de agrupamento foram relativamente rápidos. Houve um aumento na segunda
+entrada devido ao aumento do tabuleiro e também das formigas presentes no tabuleiro (há
+mais cálculos de similaridade sendo feitas).
 
 % 5. Conclusão
 %   Considerações sobre o trabalho e sobre os resultados obtidos, trabalhos futuros.
@@ -333,11 +360,14 @@ Possivelmente um ajuste mais fino é necessário para gerar um melhor agrupamento.
 
 Novamente, o agrupamento se mostrou eficiente, principalmente para quando a diferença
 entre os grupos de dados eram maiores, como foi o caso da Entrada 1. Em um intervalo
-de tempo curto é possível agrupar uma grande quantidade de dados.
+de tempo curto (Tabela~\ref{tab:tempo}) é possível agrupar uma grande quantidade de dados.
 
 Como sugestão de trabalhos futuros está a paralelização das ações das formigas, a
 melhora da função de movimentação e uma análise mais refinada das variáveis empíricas das
 Equações~\ref{eq:simi}~e~\ref{eq:pegarlargar}.
+
+Também há algumas melhoras propostas por \cite{handl2003ant}, onde pode-se implementar
+um $\alpha$ e um raio de visão dinâmico para cada formiga.
 
 \bibliographystyle{sbc}
 \bibliography{sbc-template}
