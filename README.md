@@ -41,4 +41,4 @@ Follows the same principles of the Assignment 1, but here we are not agrouping
 homogeneous data. Now the "dead ants" are actually data with properties, and we need
 to calculate how similar those data are in order to agroup them.
 
-![assignment2](/assignment2/report/figuras/teste1.png)
+![assignment2](/assignment2/report/figuras/13.png)
