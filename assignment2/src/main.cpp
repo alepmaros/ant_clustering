@@ -23,7 +23,7 @@ std::vector<Ant> dead_ants;
  * ANTS CONFIGS  *
  *****************/
 // Numer of alive and dead ants
-int         nAliveAnts  = 15;
+int         nAliveAnts  = 50;
 // The number of dead ants depends on the file passed on execution
 int         nDeadAnts   = 0;
 // Radius that the ant can see
@@ -38,15 +38,15 @@ int         antSize     = 10;
  * SCREEN CONFIG  *
  ******************/
 // Screen size in the x and y positions
-int         screenSize  = 800;
+int         screenSize  = 630;
 
 // How many iterations should it calculated before drawing to the screen.
-int         drawIterations = 500;
+int         drawIterations = 2000;
 
 // nIterations == how many iterations it already did
 // maxIterations == the number max of iterations to do
 unsigned long nIterations   = 0;
-unsigned long maxIterations = 2000000;
+unsigned long maxIterations = 1000000;
 
 // Variable to hold how many time has passed since the simulation begun
 float         elapsedTime   = 0.0;
@@ -163,14 +163,14 @@ int main()
                     }
                 }
 
-                // Update Alive Ants
+                for(std::vector<Ant>::iterator it = alive_ants.begin();
+                        it != alive_ants.end(); it++) 
+                {
+                    it->update(nIterations, maxIterations);
+                }
+
                 if (nIterations < maxIterations)
                 {
-                    for(std::vector<Ant>::iterator it = alive_ants.begin();
-                            it != alive_ants.end(); it++) 
-                    {
-                        it->update();
-                    }
                     nIterations++;
                 }
             }
@@ -190,24 +190,24 @@ int main()
             }
         }
                 
-        window.clear(sf::Color::White);
+        window.clear(sf::Color::Black);
 
         // Draw Grid Lines
-        for (int i = 0; i < spaceAvailable; i++)
-        {
-            sf::RectangleShape line(sf::Vector2f(800, 1));
-            sf::RectangleShape line2(sf::Vector2f(800,1));
+        //for (int i = 0; i < spaceAvailable; i++)
+        //{
+            //sf::RectangleShape line(sf::Vector2f(800, 1));
+            //sf::RectangleShape line2(sf::Vector2f(800,1));
 
-            line.setFillColor(sf::Color::Black);
-            line.setPosition(sf::Vector2f(0, i * antSize));
+            //line.setFillColor(sf::Color::Black);
+            //line.setPosition(sf::Vector2f(0, i * antSize));
 
-            line2.rotate(90);
-            line2.setFillColor(sf::Color::Black);
-            line2.setPosition(sf::Vector2f(i * antSize, 0));
+            //line2.rotate(90);
+            //line2.setFillColor(sf::Color::Black);
+            //line2.setPosition(sf::Vector2f(i * antSize, 0));
 
-            window.draw(line);
-            window.draw(line2);
-        }
+            //window.draw(line);
+            //window.draw(line2);
+        //}
 
         // Draw Dead Ants
         for(std::vector<Ant>::iterator it = dead_ants.begin();
@@ -243,20 +243,22 @@ int main()
         }
 
         // Draw the FPS
-        sprintf(c, "%f", elapsedTime);
+        sprintf(c, "Time: %f", elapsedTime);
         std::string string(c);
         sf::String str(string);
         sf::Text text(str, font);
-        text.setFillColor(sf::Color::Black);
+        text.setFillColor(sf::Color::White);
+        text.setCharacterSize(25);
         window.draw(text);
 
         // Draw how many iterations already happened
-        sprintf(c, "%lu", nIterations);
+        sprintf(c, "Iteration: %lus", nIterations);
         std::string string2(c);
         sf::String str2(string2);
         sf::Text text2(str2, font);
-        text2.setFillColor(sf::Color::Black);
-        text2.setPosition(0,40);
+        text2.setFillColor(sf::Color::White);
+        text2.setCharacterSize(25);
+        text2.setPosition(0,30);
         window.draw(text2);
 
 

@@ -48,7 +48,7 @@ public:
     void                draw(sf::RenderWindow* window);
 
     // Only alive ants should call update
-    void                update();
+    void                update(int nIteration, int nMaxIterations);
 
     // Function used for alive ants move dead ants
     void                move(sf::Vector2f position);

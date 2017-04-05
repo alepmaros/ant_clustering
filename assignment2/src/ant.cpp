@@ -96,11 +96,11 @@ Ant::Ant(int antId,
 
 void Ant::draw(sf::RenderWindow *window)
 {
-    sf::Text numero(std::to_string(mAntType), font);
+    //sf::Text numero(std::to_string(mAntType), font);
 
-    numero.setCharacterSize(mAntSize);
-    numero.setPosition(mGridPosition.x * mAntSize, mGridPosition.y * mAntSize);
-    numero.setFillColor(sf::Color::Black);
+    //numero.setCharacterSize(mAntSize);
+    //numero.setPosition(mGridPosition.x * mAntSize, mGridPosition.y * mAntSize);
+    //numero.setFillColor(sf::Color::Black);
 
     if (this->mCurrentStatus == Status::Carrying)
     {
@@ -111,14 +111,15 @@ void Ant::draw(sf::RenderWindow *window)
         this->mBody.setFillColor(sf::Color::Black);
     }
     window->draw(this->mBody); 
-    window->draw(numero);
+    //window->draw(numero);
 
 }
 
 // Only alive ants should call this.
-void Ant::update()
+void Ant::update(int nIteration, int nMaxIteration)
 {
-    if (this->mCurrentStatus == Status::Moving)
+    // If the iteration ends, the ant will keep going until it drops the one its carrying
+    if (this->mCurrentStatus == Status::Moving && nIteration < nMaxIteration)
     {
         // Find another direction to move to
         // Check piles etc
@@ -129,20 +130,20 @@ void Ant::update()
             //int deadAntCount = this->countDeadAnts();
             //int chanceOfCarryingAnt = std::pow((mCellsSeen - deadAntCount) / ((double) mCellsSeen), 2) * 100;
 
-            int chanceOfCarryingAnt = (int) (this->getProbabilityPickup() * 1000);
+            int chanceOfCarryingAnt = (int) (this->getProbabilityPickup() * 10000);
 
             if (chanceOfCarryingAnt <= 0)
             {
-                chanceOfCarryingAnt = 8;
+                chanceOfCarryingAnt = 5;
             }
-            else if (chanceOfCarryingAnt == 1000)
+            else if (chanceOfCarryingAnt >= 10000)
             {
-                chanceOfCarryingAnt = 992;
+                chanceOfCarryingAnt = 9995;
             }
 
             //std::cout << "There is a x% chance of carrying this ant: " << chanceOfCarryingAnt << std::endl;
 
-            if( (std::rand() % 1001) <= chanceOfCarryingAnt)
+            if( (std::rand() % 10001) <= chanceOfCarryingAnt)
             {
                 //std::cout << "I am starting to carry an ant at position " << 
                     //mGridPosition.y << " - " << mGridPosition.x << std::endl;
@@ -150,26 +151,26 @@ void Ant::update()
             } 
         }
     }
-    else
+    else if (this->mCurrentStatus == Status::Carrying)
     {
         if (mDeadAntGrid[mGridPosition.y][mGridPosition.x] != -1)
         {
             //int deadAntCount = this->countDeadAnts();
             //int chanceOfDroppingAnt = (int) (std::pow( ((double) deadAntCount / mCellsSeen), 2 ) * 100);
         
-            int chanceOfDroppingAnt = (int) (this->getProbabilityDrop() * 1000);
+            int chanceOfDroppingAnt = (int) (this->getProbabilityDrop() * 10000);
             
             if (chanceOfDroppingAnt <= 0)
             {
-                chanceOfDroppingAnt = 8;
+                chanceOfDroppingAnt = 5;
             }
-            else if (chanceOfDroppingAnt >= 1000)
+            else if (chanceOfDroppingAnt >= 10000)
             {
-                chanceOfDroppingAnt = 992;
+                chanceOfDroppingAnt = 9995;
             }
 
             //std::cout << "There is a x% chance of dropping tis ant: " << chanceOfDroppingAnt << std::endl;
-            if ( (std::rand() % 1001) <= chanceOfDroppingAnt )
+            if ( (std::rand() % 10001) <= chanceOfDroppingAnt )
             {
                 //std::cout << "I dropped ant with " << chanceOfDroppingAnt << std::endl;
                 this->mCurrentStatus = Status::Moving;
@@ -288,7 +289,7 @@ sf::Vector2f Ant::getDataPosition()
 
 float Ant::calculateSimilarity()
 {
-    float alpha = 8;
+    float alpha = 10;
     float similarity = 0;
     float distanceX, distanceY, distance;
     int posX, posY;
@@ -331,15 +332,18 @@ float Ant::calculateSimilarity()
                 distanceY = deadAntDataPos_j.y - deadAntDataPosition.y;
                 distance = std::sqrt( (distanceX * distanceX) + (distanceY * distanceY));
                 distance = 1 - (distance/alpha);
-                //if (mDeadAnts[mDeadAntGrid[mGridPosition.y][mGridPosition.x]].mAntType ==
-                       //mDeadAnts[mDeadAntGrid[posY][posX]].getAntType())
+
+                if (distance < 0.f)
+                    return 0.f;
+
                 deadAntCount++;
 
                 similarity += distance;
             }
         }
     }
-    similarity = (1.0 / std::pow(mCellsSeen - deadAntCount, 2)) * similarity;
+
+    similarity = (1.0 / std::pow((mCellsSeen+1) - deadAntCount, 2)) * similarity;
     
     // if similarity < 0 return 0 else return similarity
     return similarity < 0 ? 0 : similarity;
@@ -347,7 +351,7 @@ float Ant::calculateSimilarity()
 
 float Ant::getProbabilityPickup()
 {
-    float k1 = 0.014;
+    float k1 = 0.02;
     float similarity = this->calculateSimilarity();
     float pp = k1 / (k1 + similarity);
     //std::cout << similarity << " @ pp:" << pp * pp << " @ k1: " << k1 << std::endl;
@@ -356,7 +360,7 @@ float Ant::getProbabilityPickup()
 
 float Ant::getProbabilityDrop()
 {
-    float k2 = 0.0615;
+    float k2 = 0.03;
     float similarity = this->calculateSimilarity();
     float pd = similarity / (k2 + similarity);
     //std::cout << similarity << " @ " << k2 << std::endl;
